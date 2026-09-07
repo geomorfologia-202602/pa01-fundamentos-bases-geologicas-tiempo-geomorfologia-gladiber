@@ -1,15 +1,15 @@
 ---
-title: "Título del manuscrito (informativo, no \"Práctica X\")"
+title: "Control estructural del relieve y drenaje asociado a la Zona de la Falla de Camú, norte de la República Dominicana"
 author:
-  - "Nombre Apellido (Matrícula XXXXX)"
-  - "Nombre Apellido (Matrícula XXXXX) [si aplica]"
-course: "Biogeografía (GEO-131)"
-practice: "Práctica: Técnicas de ecología numérica con *datasets* de R"
+  - "Gladiber Hernández (Matrícula n/a)"
+course: "Geomorfología"
+practice: "Práctica 01 – Ejercicio 04: Geomorfología estructural: caso controlado por fallas/pliegues/diaclasas"
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
+bibliography: referencias.bib
+link-citations: true
+nocite: '@*'
 output:
   bookdown::pdf_document2:
-    # toc: true
-    # toc_depth: 3
     number_sections: false
     fig_caption: yes
 always_allow_html: true
@@ -25,239 +25,1211 @@ knitr::opts_chunk$set(
   fig.height = 5,
   out.width = "100%"
 )
-set.seed(123)
 
-# Paquetes (ajusta según el ejercicio elegido)
-pkg_needed <- c("vegan", "cluster", "indicspecies", "adespatial",
-                "iNEXT", "SpadeR", "ggplot2", "dplyr", "tidyr", "readr")
+pkg_needed <- c("sf", "terra", "ggplot2", "dplyr", "here", "elevatr", "knitr")
 has_pkg <- sapply(pkg_needed, requireNamespace, quietly = TRUE)
 if (!all(has_pkg)) {
-  message("Paquetes no críticos ausentes (se omitirán bloques opcionales): ",
-          paste(names(has_pkg)[!has_pkg], collapse = ", "))
+  message("Paquetes ausentes: ", paste(names(has_pkg)[!has_pkg], collapse = ", "))
 }
 invisible(sapply(names(has_pkg)[has_pkg], library, character.only = TRUE))
 ```
 
-<!-- ===========================================================
-REGLAS DE LA PRÁCTICA (resumen operativo)
-- Producto: manuscrito reproducible + presentación oral (17 + 3).
-- Individual o pareja: cada integrante debe dominar todo.
-- IA: se permite como apoyo, pero TODO debe ser verificable y trazable.
-- Puedes usar esta plantilla o cualquier otra de tu preferencia.
-- El código que aparece en esta plantilla es una base de ejemplo genérica, probablemente no aplica a tu caso.
-=========================================================== -->
+# Resumen
 
-# Resumen (Abstract)
+Este estudio evalúa en qué medida la Zona de la Falla de Camú se relaciona con la configuración del relieve y la organización del drenaje en el norte de la República Dominicana. Se utilizaron la traza de la falla, un modelo digital de elevación, una red de drenaje derivada de ALOS-PALSAR mediante GRASS GIS, la hidrografía nominal de los ríos Camú y Bajabonico y cartografía geológica del Servicio Geológico Nacional. El análisis se realizó dentro de un corredor de 10 km alrededor de la falla. Se calcularon la pendiente y la orientación de las laderas, la dirección dominante de la falla y la orientación de los segmentos fluviales. Posteriormente, se comparó su correspondencia angular, considerando compatibles las orientaciones con una diferencia máxima de 20°, y se examinó su variación en las franjas de 0–1 km, 1–3 km y 3–10 km. Los resultados muestran una asociación espacial y direccional variable entre la falla, algunas vertientes empinadas y determinados tramos de los ríos analizados, pero no una correspondencia continua en todo el corredor. Esto sugiere que la estructura geológica podría influir localmente en el relieve y el drenaje, junto con otros factores como la litología y los procesos erosivos. Sin embargo, estas asociaciones geomorfológicas no demuestran por sí solas actividad tectónica reciente. La principal limitación corresponde a la resolución y procedencia de los datos utilizados, así como a la precisión de las capas geológicas e hidrográficas.
 
-> **Escribe 150–250 palabras.**
-> Incluye: (i) problema, (ii) datos, (iii) técnica principal, (iv) 1–2 hallazgos, (v) conclusión principal y 1 limitación.
-
-**Palabras clave:** `palabra1; palabra2; palabra3; ...`
+**Palabras clave:** geomorfología estructural; Zona de la Falla de Camú; drenaje; orientación; República Dominicana
 
 # 1. Introducción
 
-## 1.1. Contexto biogeográfico/ecológico
+## 1.1. Contexto y problema geomorfológico
 
-> **Describe el fenómeno/patrón** (diversidad, composición, gradiente, estructura espacial, etc.) que se relaciona con el ejercicio elegido.
-> Es suficiente un contexto breve y bien enfocado.
+Presentar la Zona de la Falla de Camú, el contexto geomorfológico regional y la posible relación estructura–relieve–drenaje. Introducir los ríos Camú y Bajabonico como cauces principales del análisis.
 
-## 1.2. Problema y justificación
+## 1.2. Justificación
 
-> **¿Qué problema vas a resolver con este dataset?**
-> ¿Por qué es relevante para biogeografía/ecología numérica?
+Explicar por qué es necesario evaluar cuantitativamente la relación entre la falla, el relieve y los cauces, evitando asumir control tectónico solo por proximidad espacial.
 
-## 1.3. Preguntas e hipótesis
+## 1.3. Preguntas de investigación
 
-> **Declara explícitamente** 2–4 preguntas (o hipótesis si aplica).
-> Ejemplos de plantilla:
+**Pregunta principal**
 
-* **P1.** …
-* **P2.** …
-* **H1 (si aplica).** …
+¿En qué medida la Zona de la Falla de Camú ejerce un control estructural reconocible sobre la configuración del relieve y la organización del drenaje en el norte de la República Dominicana?
 
-## 1.4. Recorrido teórico mínimo exigido (checklist)
+**Preguntas específicas**
 
-> Marca y evidencia en el manuscrito (con definición breve + uso correcto) **los conceptos teóricos** relacionados con tu ejercicio.
-> (Borra lo que no aplique; añade lo que sí.)
+a. ¿Existe correspondencia entre la orientación de la Zona de la Falla de Camú y la orientación de vertientes empinadas, escarpes y otros rasgos lineales del relieve?
 
-* [ ] AED/EDA (resúmenes, outliers, escalas)
-* [ ] Transformaciones (Hellinger, log, estandarización, etc.)
-* [ ] Distancias (Bray–Curtis, Jaccard, Euclidiana, etc.) y justificación
-* [ ] Técnica principal (PCA/CA/NMDS/CCA/db-RDA/cluster/PERMANOVA/iNEXT/SDM/…)
-* [ ] Supuestos y limitaciones de la técnica
-* [ ] Interpretación (ejes, biplots, centroides vs dispersión, etc.)
-* [ ] Escala y muestreo (qué representa un sitio/muestra)
-* [ ] Implicaciones biogeográficas/ecológicas (qué sugiere el patrón)
-* [ ] Reproducibilidad (pipeline ejecutable, semillas, sesión)
+b. ¿En qué medida la orientación y configuración de los ríos Camú y Bajabonico muestran una asociación espacial y direccional con la Zona de la Falla de Camú?
 
-# 2. Materiales y métodos
 
-## 2.1. Datos
+# 2. Marco teórico
 
-### 2.1.1. Dataset y origen
+## 2.1. Geomorfología estructural y tectónica
 
-> Indica **qué dataset** usas (`dune`, `varespec/varechem`, `mite`, `BCI`, etc.) y **de qué paquete** viene.
-> Incluye la referencia/cita del paquete o fuente cuando corresponda.
+## 2.2. Orientación de fallas y vertientes
 
-```{r datos-origen}
-# TODO: carga/obtén el dataset
-# Ejemplo:
-# data(dune, package = "vegan")
-# data(dune.env, package = "vegan")
+## 2.3. Control estructural del drenaje
+
+## 2.4. Litología como control complementario
+
+
+# 3. Materiales y métodos
+
+## 3.1. Área de estudio
+
+El área de estudio se localiza en el norte de la República Dominicana y comprende un corredor asociado a la Zona de la Falla de Camú. El análisis se extiende desde el valle del río Bajabonico y su salida hacia la bahía de La Isabela, al oeste, hasta el entorno de Sabaneta de Yásica, al este.
+
+Como ventana preliminar de análisis se utiliza un corredor de 10 km alrededor de la traza seleccionada de la Zona de la Falla de Camú. Este corredor funciona como ámbito operativo para integrar la falla, la red hidrográfica y el relieve; no se interpreta como un límite físico de influencia tectónica.
+
+## 3.2. Datos y fuentes
+
+La geometría de trabajo de la Zona de la Falla de Camú se obtuvo a partir de la capa *Fallas 2021* de ArcGIS Online (Item ID: `87841c12d9364c8184f0c73cb35b561e`). Los segmentos fueron seleccionados y unidos en QGIS y posteriormente contrastados con la cartografía geológica y las memorias explicativas del Servicio Geológico Nacional (SGN).
+
+Se utilizaron dos representaciones complementarias de la red hidrográfica. La primera corresponde a una red derivada mediante algoritmos de hidromorfometría de GRASS GIS a partir de un DEM ALOS-PALSAR, utilizada para representar la organización general del drenaje. La segunda corresponde a una red hidrográfica nominal, utilizada para identificar y extraer específicamente los ríos Camú y Bajabonico.
+
+La topografía se deriva de un modelo digital de elevación obtenido mediante `elevatr`. La fuente/producto específico del DEM se documentará de forma explícita antes de la versión final. La cartografía geológica del SGN se utilizará como control interpretativo para distinguir posibles efectos estructurales de respuestas asociadas a cambios litológicos.
+
+La figura interpretativa del contexto geológico e hidrográfico fue elaborada en QGIS mediante la superposición de la Zona de la Falla de Camú, la red hidrográfica y la cartografía geológica disponible.
+
+| Dato | Fuente | Uso principal |
+|---|---|---|
+| Zona de la Falla de Camú | *Fallas 2021*, ArcGIS Online + verificación SGN | Geometría estructural de referencia |
+| Cartografía geológica | SGN, 1:250,000 y hojas 1:50,000 | Verificación de la falla y control litológico |
+| Red hidrográfica | Red derivada de ALOS-PALSAR mediante GRASS GIS | Contexto de drenaje y análisis de Camú y Bajabonico |
+| Modelo digital de elevación | `elevatr` (producto final por documentar) | Pendiente, orientación, hillshade y morfometría |
+| Mapa Topográfico Nacional | 1:50,000 | Referencia cartográfica |
+
+## 3.3. Preparación de los datos
+
+Los datos vectoriales utilizados en el análisis fueron transformados al sistema WGS 84 / UTM zona 19N (EPSG:32619) y recortados al área de estudio. La traza de la Zona de la Falla de Camú, previamente seleccionada y unificada en QGIS, se utilizó como referencia para delimitar el corredor de análisis.
+
+La red hidrográfica fue recortada al mismo ámbito y se identificaron los ríos Camú y Bajabonico para su análisis individual. El modelo digital de elevación fue reproyectado al mismo sistema de coordenadas y utilizado para obtener la pendiente y el aspecto del terreno.
+
+## 3.4. Análisis
+
+### 3.4.1. Orientación de la falla y de los ríos Camú y Bajabonico
+
+Para analizar la relación entre la Zona de la Falla de Camú y los ríos Bajabonico y Camú, se comparó la dirección de la falla con la dirección de los cauces. Se calculó qué parte de cada río presenta una orientación similar a la falla, considerando como compatibles los segmentos con una diferencia máxima de 20°. También se evaluó cómo cambia esta relación según la distancia a la estructura, utilizando tres franjas: 0–1 km, 1–3 km y 3–10 km.
+
+```{r funciones-orientacion}
+calcular_orientacion <- function(objeto_sf, nombre) {
+
+  lineas <- sf::st_cast(sf::st_geometry(objeto_sf), "LINESTRING")
+
+  resultados <- lapply(seq_along(lineas), function(i) {
+    coords <- sf::st_coordinates(lineas[i])
+    if (nrow(coords) < 2) return(NULL)
+
+    x1 <- coords[-nrow(coords), "X"]
+    y1 <- coords[-nrow(coords), "Y"]
+    x2 <- coords[-1, "X"]
+    y2 <- coords[-1, "Y"]
+
+    dx <- x2 - x1
+    dy <- y2 - y1
+    longitud_m <- sqrt(dx^2 + dy^2)
+    azimut <- (atan2(dx, dy) * 180 / pi) %% 360
+    orientacion <- azimut %% 180
+
+    data.frame(
+  parte = i,
+  x1 = x1,
+  y1 = y1,
+  x2 = x2,
+  y2 = y2,
+  x_medio = (x1 + x2) / 2,
+  y_medio = (y1 + y2) / 2,
+  longitud_m = longitud_m,
+  azimut = azimut,
+  orientacion = orientacion,
+  elemento = nombre
+)
+  })
+
+  segmentos <- do.call(rbind, resultados)
+  segmentos[segmentos$longitud_m > 0, ]
+}
+
+  orientacion_media_axial <- function(datos) {
+  theta <- datos$orientacion * pi / 180
+  pesos <- datos$longitud_m
+  C <- sum(pesos * cos(2 * theta)) / sum(pesos)
+  S <- sum(pesos * sin(2 * theta)) / sum(pesos)
+  media_rad <- atan2(S, C) / 2
+  media_grados <- (media_rad * 180 / pi) %% 180
+  data.frame(
+    orientacion_media = media_grados,
+    concentracion = sqrt(C^2 + S^2)
+  )
+  }
+  
+  segmentos_a_sf <- function(tabla_segmentos, crs_obj) {
+  geoms <- lapply(seq_len(nrow(tabla_segmentos)), function(i) {
+    sf::st_linestring(matrix(
+      c(
+        tabla_segmentos$x1[i], tabla_segmentos$y1[i],
+        tabla_segmentos$x2[i], tabla_segmentos$y2[i]
+      ),
+      ncol = 2,
+      byrow = TRUE
+    ))
+  })
+
+  sf::st_sf(
+    tabla_segmentos,
+    geometry = sf::st_sfc(geoms, crs = crs_obj)
+  )
+}
+
+diferencia_axial <- function(orientacion, referencia) {
+  diferencia <- abs(orientacion - referencia)
+  pmin(diferencia, 180 - diferencia)
+}
+
+porcentaje_paralelo <- function(datos, tolerancia) {
+  longitud_total <- sum(datos$longitud_m)
+  longitud_coincidente <- sum(
+    datos$longitud_m[datos$diferencia_falla <= tolerancia]
+  )
+  100 * longitud_coincidente / longitud_total
+}
+```
+```{r cargar-datos-analisis, include=FALSE}
+
+# ------------------------------------------------------------
+# 1. Cargar la Zona de la Falla de Camú
+# ------------------------------------------------------------
+
+falla_camu <- sf::st_read(
+  "data/raw/fallas/falla_camu.gpkg",
+  quiet = TRUE
+)
+
+# ------------------------------------------------------------
+# 2. Cargar la hidrografía con nombres
+# ------------------------------------------------------------
+
+hidrografia <- sf::st_read(
+  "data/raw/hidrografia/hidrografia.gpkg",
+  quiet = TRUE
+)
+
+# ------------------------------------------------------------
+# 3. Cargar la red de drenaje proporcionada por el maestro
+# ------------------------------------------------------------
+
+red_grass <- sf::st_read(
+  "data/raw/hidrografia/rstream_orden_de_red_umbral_540_cleaned.gpkg",
+  quiet = TRUE
+)
+
+# ------------------------------------------------------------
+# 4. Transformar las capas vectoriales al CRS de trabajo
+#    WGS 84 / UTM zona 19N
+# ------------------------------------------------------------
+
+falla_camu <- sf::st_transform(
+  falla_camu,
+  32619
+)
+
+hidrografia <- sf::st_transform(
+  hidrografia,
+  32619
+)
+
+red_grass <- sf::st_transform(
+  red_grass,
+  32619
+)
+
+# ------------------------------------------------------------
+# 5. Crear el corredor de estudio de 10 km
+# ------------------------------------------------------------
+
+area_estudio <- sf::st_buffer(
+  sf::st_union(falla_camu),
+  dist = 10000
+)
+
+# ------------------------------------------------------------
+# 6. Recortar la red GRASS al área de estudio
+# ------------------------------------------------------------
+
+red_grass_estudio <- suppressWarnings(
+  sf::st_intersection(
+    red_grass,
+    area_estudio
+  )
+)
+
+# ------------------------------------------------------------
+# 7. Extraer los ríos Camú y Bajabonico
+# ------------------------------------------------------------
+
+rio_camu <- hidrografia[
+  !is.na(hidrografia$NOMBRE) &
+    grepl(
+      "Camú",
+      hidrografia$NOMBRE,
+      ignore.case = TRUE
+    ),
+]
+
+rio_bajabonico <- hidrografia[
+  !is.na(hidrografia$NOMBRE) &
+    grepl(
+      "Bajabonico",
+      hidrografia$NOMBRE,
+      ignore.case = TRUE
+    ),
+]
+
+# ------------------------------------------------------------
+# 8. Cargar el DEM original
+# ------------------------------------------------------------
+
+dem_raw <- terra::rast(
+  "data/raw/dem/dem_camufalla_raw.tif"
+)
+
+# ------------------------------------------------------------
+# 9. Transformar temporalmente el área al CRS del DEM
+#    Esto permite hacer correctamente el recorte.
+# ------------------------------------------------------------
+
+area_estudio_dem <- sf::st_transform(
+  area_estudio,
+  terra::crs(dem_raw)
+)
+
+area_vect_dem <- terra::vect(
+  area_estudio_dem
+)
+
+# ------------------------------------------------------------
+# 10. Recortar y enmascarar el DEM
+# ------------------------------------------------------------
+
+dem_terrestre <- terra::crop(
+  dem_raw,
+  area_vect_dem
+)
+
+dem_terrestre <- terra::mask(
+  dem_terrestre,
+  area_vect_dem
+)
+
+# ------------------------------------------------------------
+# 11. Excluir elevaciones inferiores al nivel del mar
+# ------------------------------------------------------------
+
+dem_terrestre <- terra::ifel(
+  dem_terrestre < 0,
+  NA,
+  dem_terrestre
+)
+
+# ------------------------------------------------------------
+# 12. Reproyectar el DEM al CRS métrico de trabajo
+# ------------------------------------------------------------
+
+dem_terrestre <- terra::project(
+  dem_terrestre,
+  "EPSG:32619",
+  method = "bilinear"
+)
+
+# ------------------------------------------------------------
+# 13. Calcular pendiente y aspecto
+# ------------------------------------------------------------
+
+pendiente_area <- terra::terrain(
+  dem_terrestre,
+  v = "slope",
+  unit = "degrees",
+  neighbors = 8
+)
+
+aspecto_area <- terra::terrain(
+  dem_terrestre,
+  v = "aspect",
+  unit = "degrees",
+  neighbors = 8
+)
+
 ```
 
-### 2.1.2. Diseño de muestreo y variables
+```{r comprobar-objetos, include=FALSE}
 
-> Describe: unidad muestral, variables biológicas (respuesta) y ambientales (explicativas), tipos de variables, rangos, NA, etc.
+objetos_necesarios <- c(
+  "falla_camu",
+  "area_estudio",
+  "hidrografia",
+  "rio_camu",
+  "rio_bajabonico",
+  "red_grass_estudio",
+  "dem_raw",
+  "dem_terrestre",
+  "pendiente_area",
+  "aspecto_area"
+)
 
-```{r datos-inspeccion}
-# TODO: inspección mínima
-# str(...)
-# summary(...)
-# head(...)
+comprobacion_objetos <- data.frame(
+  objeto = objetos_necesarios,
+  disponible = vapply(
+    objetos_necesarios,
+    exists,
+    logical(1)
+  )
+)
+
+knitr::kable(
+  comprobacion_objetos,
+  col.names = c(
+    "Objeto",
+    "Disponible"
+  ),
+  caption = "Comprobación de los objetos utilizados en el análisis."
+)
+
 ```
 
-### 2.1.3. Limitaciones del dataset
+```{r calculo-orientaciones}
 
-> Señala limitaciones **reales** (tamaño muestral, sesgos, variables omitidas, representatividad, escalas, etc.).
+orientacion_falla <- calcular_orientacion(
+  falla_camu,
+  "Zona de Falla de Camú"
+)
 
-## 2.2. Preparación de datos (decisiones analíticas)
+orientacion_camu <- calcular_orientacion(
+  rio_camu,
+  "Río Camú"
+)
 
-### 2.2.1. Limpieza y manejo de NA
+orientacion_bajabonico <- calcular_orientacion(
+  rio_bajabonico,
+  "Río Bajabonico"
+)
 
-```{r limpieza}
-# TODO: decisiones de NA / filtrados (justifica en texto)
+referencia_falla <- orientacion_media_axial(
+  orientacion_falla
+)$orientacion_media
+
+orientacion_camu$diferencia_falla <- diferencia_axial(
+  orientacion_camu$orientacion,
+  referencia_falla
+)
+
+orientacion_bajabonico$diferencia_falla <- diferencia_axial(
+  orientacion_bajabonico$orientacion,
+  referencia_falla
+)
+
+```
+```{r proximidad-falla}
+# ------------------------------------------------------------
+# Proximidad de los segmentos fluviales a la falla
+# ------------------------------------------------------------
+
+calcular_distancia_falla <- function(datos, falla) {
+
+  puntos_medios <- sf::st_as_sf(
+    datos,
+    coords = c("x_medio", "y_medio"),
+    crs = sf::st_crs(falla),
+    remove = FALSE
+  )
+
+  falla_union <- sf::st_union(falla)
+
+  datos$distancia_falla_m <- as.numeric(
+    sf::st_distance(
+      puntos_medios,
+      falla_union
+    )
+  )
+
+  datos
+}
+
+# Calcular distancia de cada segmento a la falla
+orientacion_camu <- calcular_distancia_falla(
+  orientacion_camu,
+  falla_camu
+)
+
+orientacion_bajabonico <- calcular_distancia_falla(
+  orientacion_bajabonico,
+  falla_camu
+)
+
+# ------------------------------------------------------------
+# Clasificación por distancia
+# ------------------------------------------------------------
+
+clasificar_distancia <- function(datos) {
+
+  datos |>
+    dplyr::mutate(
+      franja_distancia = dplyr::case_when(
+        distancia_falla_m <= 1000 ~ "0–1 km",
+        distancia_falla_m <= 3000 ~ "1–3 km",
+        TRUE ~ "3–10 km"
+      ),
+      franja_distancia = factor(
+        franja_distancia,
+        levels = c(
+          "0–1 km",
+          "1–3 km",
+          "3–10 km"
+        )
+      )
+    )
+}
+
+orientacion_camu <- clasificar_distancia(
+  orientacion_camu
+)
+
+orientacion_bajabonico <- clasificar_distancia(
+  orientacion_bajabonico)
+  
+  # ------------------------------------------------------------
+# Correspondencia angular según proximidad a la falla
+# ------------------------------------------------------------
+
+rios_proximidad <- dplyr::bind_rows(
+  orientacion_camu,
+  orientacion_bajabonico
+)
+
+tabla_proximidad <- rios_proximidad |>
+  dplyr::group_by(
+    elemento,
+    franja_distancia
+  ) |>
+  dplyr::summarise(
+    longitud_total_km =
+      sum(longitud_m) / 1000,
+
+    longitud_compatible_km =
+      sum(
+        longitud_m[diferencia_falla <= 20]
+      ) / 1000,
+
+    porcentaje_compatible =
+      100 *
+      longitud_compatible_km /
+      longitud_total_km,
+
+    .groups = "drop"
+  )
+
 ```
 
-### 2.2.2. Transformaciones y estandarización
+### 3.4.2. Orientación de las laderas de mayor pendiente
 
-> Explica qué transformación aplicas y **por qué**.
+Para evaluar la relación entre la Zona de Falla de Camú y el relieve, se analizaron las áreas de mayor pendiente, correspondientes al 10 % de pendientes más altas del área de estudio, equivalentes a valores de aproximadamente 15.9° o más. Luego se comparó la orientación de estas laderas con la orientación dominante de la falla y se evaluó cómo cambia esta relación según la distancia a la estructura.
 
-```{r transformaciones}
-# TODO: transformación (e.g., decostand(..., "hellinger"))
+```{r orientacion-relieve}
+# ------------------------------------------------------------
+# Definir vertientes empinadas
+# ------------------------------------------------------------
+
+# Revisar percentiles de la pendiente
+percentiles_pendiente <- terra::global(
+  pendiente_area,
+  fun = function(x) {
+    stats::quantile(
+      x,
+      probs = c(0.50, 0.75, 0.90, 0.95),
+      na.rm = TRUE
+    )
+  }
+)
+
+# Umbral definitivo para vertientes empinadas:
+# percentil 90 de la pendiente del área de estudio
+umbral_pendiente <- as.numeric(
+  percentiles_pendiente[1, "X90."]
+)
+
+# Seleccionar únicamente las vertientes empinadas
+mascara_empinadas <- terra::ifel(
+  pendiente_area >= umbral_pendiente,
+  1,
+  NA
+)
+
+# ------------------------------------------------------------
+# Orientación axial aproximada de vertientes/escarpes
+# ------------------------------------------------------------
+
+# El aspect representa la dirección de máxima pendiente.
+# La orientación longitudinal aproximada de la vertiente
+# se considera perpendicular al aspect.
+
+orientacion_escarpe <- (
+  aspecto_area + 90
+) %% 180
+
+# Conservar solamente las vertientes empinadas
+orientacion_escarpe_empinado <- terra::mask(
+  orientacion_escarpe,
+  mascara_empinadas
+)
+
+# Diferencia angular respecto de la orientación dominante de la falla
+diferencia_relieve <- abs(
+  orientacion_escarpe_empinado -
+    referencia_falla
+)
+
+# Corregir por tratarse de orientación axial
+diferencia_relieve <- terra::ifel(
+  diferencia_relieve > 90,
+  180 - diferencia_relieve,
+  diferencia_relieve
+)
+
+# ------------------------------------------------------------
+# Franjas de proximidad a la falla
+# ------------------------------------------------------------
+
+falla_union <- sf::st_union(
+  falla_camu
+)
+
+zona_1km <- sf::st_buffer(
+  falla_union,
+  1000
+)
+
+zona_3km <- sf::st_buffer(
+  falla_union,
+  3000
+)
+
+zona_10km <- sf::st_buffer(
+  falla_union,
+  10000
+)
+
+zona_1_3km <- sf::st_difference(
+  zona_3km,
+  zona_1km
+)
+
+zona_3_10km <- sf::st_difference(
+  zona_10km,
+  zona_3km
+)
+
+# ------------------------------------------------------------
+# Función para resumir correspondencia angular del relieve
+# ------------------------------------------------------------
+
+resumir_relieve_zona <- function(raster_diferencia, zona, nombre) {
+
+  zona_vect <- terra::vect(zona)
+
+  raster_zona <- terra::crop(
+    raster_diferencia,
+    zona_vect
+  )
+
+  raster_zona <- terra::mask(
+    raster_zona,
+    zona_vect
+  )
+
+  compatible <- terra::ifel(
+    raster_zona <= 20,
+    1,
+    0
+  )
+
+  porcentaje <- terra::global(
+    compatible,
+    fun = "mean",
+    na.rm = TRUE
+  )
+
+  data.frame(
+    franja_distancia = nombre,
+    porcentaje_compatible =
+      as.numeric(porcentaje[1, 1]) * 100
+  )
+}
+
+tabla_relieve <- dplyr::bind_rows(
+
+  resumir_relieve_zona(
+    diferencia_relieve,
+    zona_1km,
+    "0–1 km"
+  ),
+
+  resumir_relieve_zona(
+    diferencia_relieve,
+    zona_1_3km,
+    "1–3 km"
+  ),
+
+  resumir_relieve_zona(
+    diferencia_relieve,
+    zona_3_10km,
+    "3–10 km"
+  )
+)
+
 ```
 
-### 2.2.3. Medida(s) de distancia (si aplica)
+### 3.4.3. Comparación con la cartografía geológica
 
-> Declara la(s) distancia(s) y justifica (tipo de datos, objetivo, supuestos).
+La cartografía geológica se utilizó para comparar visualmente la ubicación de la Zona de la Falla de Camú, los principales cauces y las unidades geológicas presentes en el área de estudio. Esta comparación permitió considerar si algunos cambios en el relieve o en el trazado de los ríos podían estar relacionados también con diferencias en los materiales geológicos y no únicamente con la falla.
 
-```{r distancias}
-# TODO: distance matrix (e.g., vegdist(..., method="bray"))
+## 3.5. Limitaciones y control de calidad
+
+El análisis presenta algunas limitaciones relacionadas con la resolución y procedencia del modelo digital de elevación, la escala de la cartografía geológica y la precisión de las capas de fallas e hidrografía utilizadas. Todas las capas fueron llevadas al mismo sistema de coordenadas (EPSG:32619) y se revisaron sus geometrías antes del análisis. Los resultados permiten identificar asociaciones espaciales y direccionales entre la falla, el relieve y el drenaje, pero no permiten demostrar por sí solos actividad tectónica reciente.
+
+# 4. Resultados
+
+## 4.1. Área de estudio y características generales del relieve
+
+La Figura 1 muestra las características generales del relieve en el área de estudio. En la Figura 1A se observa la distribución de la elevación, con los sectores de menor altitud principalmente hacia el norte del corredor y áreas más elevadas hacia el sur. La Figura 1B muestra la distribución de las pendientes, que son mayores en los sectores de relieve más accidentado. En ambos paneles se presenta la ubicación de la Zona de la Falla de Camú y de los ríos Bajabonico y Camú.
+
+```{r fig-caracteristicas-relieve, echo=FALSE, fig.cap="Características generales del relieve en el área de estudio de la Zona de Falla de Camú: A) elevación; B) pendiente del terreno. Se muestran la Zona de Falla de Camú, los ríos Camú y Bajabonico y la red de drenaje.", fig.width=9, fig.height=4.5, out.width="100%"}
+
+dem_figura <- terra::crop(
+  dem_terrestre,
+  terra::ext(pendiente_area)
+)
+
+options(scipen = 999)
+
+op <- par(mfrow = c(1, 2), mar = c(3, 3, 2.5, 1))
+
+# A. Modelo digital de elevación
+plot(
+  dem_figura,
+  main = "A. Elevación (m)",
+  col = terrain.colors(30),
+  axes = TRUE,
+  xlab = "Este UTM (m)",
+  ylab = "Norte UTM (m)"
+)
+
+plot(sf::st_geometry(red_grass_estudio),
+     add = TRUE, col = "grey60", lwd = 0.25)
+
+plot(sf::st_geometry(rio_bajabonico),
+     add = TRUE, col = "blue", lwd = 1.2)
+
+plot(sf::st_geometry(rio_camu),
+     add = TRUE, col = "darkgreen", lwd = 1.2)
+
+plot(sf::st_geometry(falla_camu),
+     add = TRUE, col = "red", lwd = 1.5)
+
+legend(
+  "bottomleft",
+  legend = c(
+    "Zona de Falla de Camú",
+    "Río Bajabonico",
+    "Río Camú",
+    "Red de drenaje"
+  ),
+  col = c("red", "blue", "darkgreen", "grey60"),
+  lwd = c(1.5, 1.2, 1.2, 0.8),
+  bty = "n",
+  cex = 0.7
+)
+
+# B. Pendiente
+plot(
+  pendiente_area,
+  main = "B. Pendiente (°)",
+  col = hcl.colors(30, "YlOrRd", rev = TRUE),
+  axes = TRUE,
+  xlab = "Este UTM (m)",
+  ylab = "Norte UTM (m)"
+)
+
+plot(sf::st_geometry(red_grass_estudio),
+     add = TRUE, col = "grey60", lwd = 0.25)
+
+plot(sf::st_geometry(rio_bajabonico),
+     add = TRUE, col = "blue", lwd = 1.2)
+
+plot(sf::st_geometry(rio_camu),
+     add = TRUE, col = "darkgreen", lwd = 1.2)
+
+plot(sf::st_geometry(falla_camu),
+     add = TRUE, col = "red", lwd = 1.5)
+
+par(op)
+```
+## 4.2. Orientación de la Zona de la Falla de Camú
+
+La orientación de la Zona de la Falla de Camú se concentra principalmente alrededor de los 110°, con una orientación media axial ponderada de aproximadamente 109.9°, correspondiente a una dirección general ONO–ESE (Figura X).
+
+```{r fig-orientacion-falla, echo=FALSE, fig.cap="Distribución de la longitud de la Zona de la Falla de Camú según orientación. La línea discontinua indica la orientación media axial ponderada de 109.9°."}
+if (exists("orientacion_falla")) {
+  ggplot2::ggplot(
+    orientacion_falla,
+    ggplot2::aes(x = orientacion, weight = longitud_m / 1000)
+  ) +
+    ggplot2::geom_histogram(binwidth = 10, boundary = 0) +
+    ggplot2::geom_vline(
+  xintercept = referencia_falla,
+  linetype = "dashed",
+  linewidth = 0.8
+) +
+    ggplot2::scale_x_continuous(breaks = seq(0, 180, 20), limits = c(0, 180)) +
+    ggplot2::labs(
+      title = "Distribución de la orientación de la Zona de Falla de Camú",
+       x = "Orientación (°)",
+       y = "Longitud de traza (km)"
+    ) +
+    ggplot2::theme_minimal()
+}
 ```
 
-## 2.3. Técnica principal (núcleo del ejercicio)
+## 4.3. Orientación de los ríos Camú y Bajabonico
+Se probaron tres márgenes angulares para observar cómo cambia la correspondencia entre la dirección de los cauces y la orientación de la falla.
+```{r tabla-correspondencia-angular}
+if (exists("orientacion_camu") && exists("orientacion_bajabonico")) {
+  tabla_angular <- data.frame(
+  Rio = rep(c("Río Camú", "Río Bajabonico"), each = 3),
+  Tolerancia = rep(c("±10°", "±15°", "±20°"), times = 2),
+  Porcentaje = c(
+    porcentaje_paralelo(orientacion_camu, 10),
+    porcentaje_paralelo(orientacion_camu, 15),
+    porcentaje_paralelo(orientacion_camu, 20),
+    porcentaje_paralelo(orientacion_bajabonico, 10),
+    porcentaje_paralelo(orientacion_bajabonico, 15),
+    porcentaje_paralelo(orientacion_bajabonico, 20)
+  )
+)
 
-> Describe la técnica, qué responde, qué representa cada salida y sus supuestos.
+tabla_angular$Porcentaje <- round(tabla_angular$Porcentaje, 1)
 
-```{r tecnica-principal}
-# TODO: implementa la técnica elegida
-# Ejemplos:
-# - Ord. no restringida: rda() para PCA, metaMDS() para NMDS
-# - Ord. restringida: cca(), capscale()
-# - Clustering: hclust()
-# - PERMANOVA: adonis2()
-# - Diversidad: diversity(), specnumber(), betadiver(), etc.
-# - iNEXT: iNEXT()
+knitr::kable(
+  tabla_angular,
+  col.names = c(
+    "Río",
+    "Tolerancia de dirección (°)",
+    "Correspondencia (%)"
+  ),
+  caption = "Correspondencia direccional de los ríos Camú y Bajabonico con la Zona de la Falla de Camú según distintos rangos de comparación."
+)
+
+}
+```
+```{r tabla-proximidad-drenaje, include=FALSE}
+knitr::kable(
+  tabla_proximidad,
+  digits = 1,
+  col.names = c(
+    "Río",
+    "Distancia a la falla",
+    "Longitud analizada (km)",
+    "Longitud compatible (km)",
+    "Correspondencia (%)"
+  ),
+  caption = "Correspondencia direccional de los ríos Camú y Bajabonico según la distancia a la Zona de la Falla de Camú."
+)
+```
+La correspondencia direccional del río Camú varía claramente con la proximidad a la Zona de la Falla de Camú. Dentro del primer kilómetro, el 38.6 % de la longitud analizada presenta una orientación situada dentro de ±20° de la orientación dominante de la falla. Esta proporción disminuye a 23.0 % entre 1 y 3 km y a 10.6 % entre 3 y 10 km. El río Bajabonico presenta un comportamiento diferente, con valores relativamente constantes de aproximadamente 24–25 % en las tres franjas de distancia.
+
+```{r fig-proximidad-drenaje, fig.cap="Correspondencia de orientación de los ríos Camú y Bajabonico con la Zona de la Falla de Camú según la distancia a la falla."}
+
+ggplot2::ggplot(
+  tabla_proximidad,
+  ggplot2::aes(
+    x = franja_distancia,
+    y = porcentaje_compatible,
+    fill = elemento
+  )
+) +
+  ggplot2::geom_col(
+    position = ggplot2::position_dodge(width = 0.9)
+  ) +
+  ggplot2::geom_text(
+    ggplot2::aes(
+      label = sprintf("%.1f", porcentaje_compatible)
+    ),
+    position = ggplot2::position_dodge(width = 0.9),
+    vjust = -0.4,
+    size = 3
+  ) +
+  ggplot2::labs(
+    x = "Distancia a la falla",
+    y = "Correspondencia de orientación (%)",
+    fill = "Río"
+  ) +
+  ggplot2::ylim(0, 45) +
+  ggplot2::theme_minimal()
+```
+```{r fig-mapa-drenaje-relieve, echo=FALSE, fig.cap="Relación espacial de los ríos Camú y Bajabonico con la Zona de la Falla de Camú. Se resaltan los tramos de los cauces con orientación similar a la falla, considerando una tolerancia de ±20°.", fig.width=9, fig.height=6, out.width="100%"}
+
+# convertir segmentos de los ríos a líneas
+segmentos_camu_sf <- segmentos_a_sf(
+  orientacion_camu,
+  sf::st_crs(falla_camu)
+)
+
+segmentos_bajabonico_sf <- segmentos_a_sf(
+  orientacion_bajabonico,
+  sf::st_crs(falla_camu)
+)
+
+# seleccionar solo los tramos con orientación similar a la falla
+segmentos_camu_compat <- segmentos_camu_sf[
+  segmentos_camu_sf$diferencia_falla <= 20, ]
+
+segmentos_bajabonico_compat <- segmentos_bajabonico_sf[
+  segmentos_bajabonico_sf$diferencia_falla <= 20, ]
+
+segmentos_camu_no_compat <- segmentos_camu_sf[
+  segmentos_camu_sf$diferencia_falla > 20, ]
+
+segmentos_bajabonico_no_compat <- segmentos_bajabonico_sf[
+  segmentos_bajabonico_sf$diferencia_falla > 20, ]
+
+# definir extensión del mapa
+bbox_mapa <- sf::st_bbox(
+  sf::st_buffer(sf::st_union(falla_camu), 10000)
+)
+
+dem_mapa <- terra::crop(
+  dem_terrestre,
+  terra::ext(
+    bbox_mapa["xmin"], bbox_mapa["xmax"],
+    bbox_mapa["ymin"], bbox_mapa["ymax"]
+  )
+)
+
+# evitar notación científica en coordenadas
+options(scipen = 999)
+
+# dibujar mapa
+plot(
+  dem_mapa,
+  col = terrain.colors(40),
+  main = "Tramos de los ríos con orientación similar a la falla",
+  axes = TRUE,
+  xlab = "Este UTM (m)",
+  ylab = "Norte UTM (m)"
+)
+
+# red general
+plot(sf::st_geometry(red_grass_estudio),
+     add = TRUE, col = "grey70", lwd = 0.3)
+
+# Ríos completos
+# Tramos sin orientación similar a la falla
+plot(
+  sf::st_geometry(segmentos_bajabonico_no_compat),
+  add = TRUE,
+  col = "white",
+  lwd = 1.5
+)
+
+plot(
+  sf::st_geometry(segmentos_camu_no_compat),
+  add = TRUE,
+  col = "white",
+  lwd = 1.5
+)
+
+# Zona de Falla de Camú
+plot(
+  sf::st_geometry(falla_camu),
+  add = TRUE,
+  col = "red",
+  lwd = 1.8
+)
+
+# Bajabonico: orientación similar
+plot(
+  sf::st_geometry(segmentos_bajabonico_compat),
+  add = TRUE,
+  col = "navy",
+  lwd = 2.8
+)
+
+# Camú: orientación similar
+plot(
+  sf::st_geometry(segmentos_camu_compat),
+  add = TRUE,
+  col = "deeppink1",
+  lwd = 2.8
+)
+
+legend(
+  "topright",
+  inset = c(0.02, 0.16),
+  legend = c(
+    "Falla de Camú",
+    "Sin similitud",
+    "Bajabonico similar",
+    "Camú similar"
+  ),
+  col = c(
+    "red",
+    "white",
+    "navy",
+    "deeppink1"
+  ),
+  lwd = c(1.8, 1.5, 2.8, 2.8),
+  bty = "o",
+  bg = "grey90",
+  cex = 0.65
+)
+```
+## 4.4. Orientación de las laderas de mayor pendiente
+
+La similitud de orientación es mayor en las proximidades de la falla. Dentro del primer kilómetro, el 46.1 % de las laderas analizadas presenta una orientación similar a la Zona de la Falla de Camú. Esta proporción disminuye a 31.0 % entre 1 y 3 km y a 29.1 % entre 3 y 10 km.
+
+```{r tabla-orientacion-relieve, include=FALSE}
+
+ggplot2::ggplot(
+  tabla_relieve,
+  ggplot2::aes(
+    x = franja_distancia,
+    y = porcentaje_compatible
+  )
+) +
+  ggplot2::geom_col() +
+  ggplot2::geom_text(
+    ggplot2::aes(
+      label = sprintf("%.1f", porcentaje_compatible)
+    ),
+    vjust = -0.4,
+    size = 3
+  ) +
+  ggplot2::labs(
+    x = "Distancia a la falla",
+    y = "Laderas con orientación similar (%)"
+  ) +
+  ggplot2::ylim(0, 55) +
+  ggplot2::theme_minimal()
+
 ```
 
-## 2.4. Verificación mínima de supuestos / diagnósticos
+```{r fig-mapa-orientacion-laderas, echo=FALSE, fig.cap="Orientación de las laderas de mayor pendiente en relación con la Zona de la Falla de Camú.", fig.width=9, fig.height=6, out.width="100%"}
 
-> Aquí no se trata de “cumplir por cumplir”: explica **qué chequeas** y qué implica.
+aspecto_area <- terra::crop(
+  terra::terrain(dem_terrestre, v = "aspect", unit = "degrees"),
+  pendiente_area
+)
 
-```{r supuestos}
-# TODO: diagnósticos mínimos según técnica
-# - stress (NMDS), eigenvalues, colinealidad, betadisper, etc.
+# Umbral del 10 % de pendientes más altas
+umbral_p90 <- as.numeric(
+  stats::quantile(
+    terra::values(pendiente_area, mat = FALSE),
+    probs = 0.90,
+    na.rm = TRUE
+  )
+)
+
+# Orientación axial de las laderas a partir del aspect
+# (perpendicular a la dirección de máxima pendiente)
+orientacion_laderas <- terra::app(
+  aspecto_area,
+  fun = function(x) {
+    ifelse(is.na(x), NA, (x + 90) %% 180)
+  }
+)
+
+# Diferencia angular respecto a la orientación de la falla
+dif_falla_laderas <- terra::app(
+  orientacion_laderas,
+  fun = function(x) {
+    d <- abs(x - referencia_falla)
+    pmin(d, 180 - d)
+  }
+)
+
+dif_falla_laderas <- terra::resample(dif_falla_laderas, pendiente_area, method = "near")
+
+# Laderas de mayor pendiente
+laderas_mayor_pendiente <- terra::ifel(
+  pendiente_area >= umbral_p90,
+  1,
+  NA
+)
+
+# Clasificación
+laderas_similares <- terra::ifel(
+  laderas_mayor_pendiente & dif_falla_laderas <= 20,
+  1, NA
+)
+
+laderas_no_similares <- terra::ifel(
+  laderas_mayor_pendiente & dif_falla_laderas > 20,
+  1, NA
+)
+
+# Recorte del mapa alrededor de la falla
+bbox_mapa <- sf::st_bbox(
+  sf::st_buffer(sf::st_union(falla_camu), 10000)
+)
+
+ext_mapa <- terra::ext(
+  bbox_mapa["xmin"], bbox_mapa["xmax"],
+  bbox_mapa["ymin"], bbox_mapa["ymax"]
+)
+
+dem_mapa <- terra::crop(dem_terrestre, ext_mapa)
+laderas_similares_mapa <- terra::crop(laderas_similares, ext_mapa)
+laderas_no_similares_mapa <- terra::crop(laderas_no_similares, ext_mapa)
+
+options(scipen = 999)
+
+# Hillshade para mostrar el relieve
+pendiente_hs <- terra::terrain(dem_mapa, v = "slope", unit = "radians")
+aspecto_hs   <- terra::terrain(dem_mapa, v = "aspect", unit = "radians")
+
+hillshade <- terra::shade(
+  pendiente_hs,
+  aspecto_hs,
+  angle = 40,
+  direction = 315
+)
+
+# Fondo de relieve
+plot(
+  hillshade,
+  col = gray.colors(40, start = 0.98, end = 0.65),
+  main = "Laderas de mayor pendiente y similitud de orientación con la falla",
+  axes = TRUE,
+  legend = FALSE,
+  xlab = "Este UTM (m)",
+  ylab = "Norte UTM (m)"
+)
+
+# Todas las laderas de mayor pendiente
+laderas_mayor_pendiente_mapa <- terra::crop(
+  laderas_mayor_pendiente,
+  ext_mapa
+)
+
+plot(
+  laderas_mayor_pendiente_mapa,
+  add = TRUE,
+  col = adjustcolor("black", alpha.f = 0.45),
+  legend = FALSE
+)
+
+# Solo las laderas con orientación similar
+plot(
+  laderas_similares_mapa,
+  add = TRUE,
+  col = adjustcolor("yellow", alpha.f = 0.85),
+  legend = FALSE
+)
+
+# Falla
+plot(
+  sf::st_geometry(falla_camu),
+  add = TRUE,
+  col = "red",
+  lwd = 2
+)
+
+legend(
+  "topright",
+  inset = c(0.02, 0.16),
+  legend = c(
+    "Zona de Falla de Camú",
+    "Laderas de mayor pendiente",
+    "Laderas con orientación similar"
+  ),
+  col = c(
+    "red",
+    "black",
+    "yellow"
+  ),
+  lwd = c(2, 5, 5),
+  bty = "o",
+  bg = "white",
+  cex = 0.75
+)
 ```
 
-## 2.5. Reproducibilidad
+## 4.5. Comparación con la cartografía geológica
 
-> Declara cómo garantizas reproducibilidad: semilla, sesión, orden de ejecución.
+La comparación con la cartografía geológica muestra que la Zona de la Falla de Camú y los principales cauces atraviesan diferentes unidades geológicas dentro del área de estudio. También se observan sectores donde los ríos Bajabonico y Camú presentan trayectorias aproximadamente paralelas a la falla y otros donde cambian de dirección o se alejan de ella.
 
-```{r session-info}
-sessionInfo()
+```{r fig-geologia-camu, echo=FALSE, fig.cap="Contexto geológico e hidrográfico de la Zona de la Falla de Camú. Se muestran la traza de la falla, los ríos Bajabonico y Camú, la red hidrográfica y las principales relaciones espaciales identificadas durante el análisis.", out.width="100%"}
+knitr::include_graphics("figures/figura_interpretativa_camu.png")
 ```
+Figura elaborada en QGIS a partir de cartografía geológica del SGN, la capa Fallas 2021 y la red hidrográfica utilizada en el estudio.
 
-# 3. Resultados
+La figura permite reconocer que la relación espacial entre la falla y los cauces no es uniforme a lo largo del área de estudio. Algunos tramos mantienen una orientación similar a la estructura, mientras que en otros sectores los cauces modifican su trayectoria.
 
-> Presenta resultados en el mismo orden que Métodos.
-> Cada figura/tabla debe tener: (i) qué muestra, (ii) resultado clave, (iii) vínculo con preguntas.
+La comparación geológica se realizó de forma cualitativa a partir de la cartografía disponible. No se realizaron intersecciones vectoriales ni cálculos cuantitativos por unidad litológica.
 
-## 3.1. Resultados del AED
+# 5. Discusión
 
-```{r resultados-eda}
-# TODO: resúmenes/plots mínimos
-```
+## 5.1. Respuesta a las preguntas de investigación
 
-## 3.2. Resultados de la técnica principal
+Los resultados muestran una asociación entre la Zona de la Falla de Camú, la orientación de determinados tramos de los ríos y la orientación de las laderas de mayor pendiente. Esta asociación no es uniforme en toda el área de estudio. En el río Camú y en las laderas de mayor pendiente, la similitud de orientación es mayor en las proximidades de la falla y disminuye al aumentar la distancia. El río Bajabonico presenta un comportamiento diferente, ya que la similitud direccional se mantiene relativamente constante entre las distintas franjas analizadas.
 
-```{r resultados-tecnica}
-# TODO: gráficos/tablas principales
-```
+En conjunto, los resultados son compatibles con un control estructural sobre algunos componentes del relieve y del drenaje, pero no permiten atribuir toda la configuración observada exclusivamente a la Zona de la Falla de Camú.
 
-## 3.3. Resultados complementarios (opcionales)
+## 5.2. Interpretación de la relación falla–relieve–drenaje
 
-```{r resultados-extra}
-# TODO: análisis extra si aporta a tus preguntas
-```
+Los resultados sugieren que la relación entre la Zona de la Falla de Camú, el relieve y el drenaje varía dentro del área de estudio. En el río Camú, la mayor similitud de orientación cerca de la falla y su disminución con la distancia indican que algunos tramos del cauce podrían estar condicionados por la disposición de la estructura. En el río Bajabonico esta relación es menos evidente, ya que la similitud de orientación se mantiene relativamente constante con la distancia.
 
-# 4. Discusión
+En las laderas de mayor pendiente también se observa una mayor similitud de orientación en las proximidades de la falla. Este patrón, junto con la disposición espacial observada en los mapas, es compatible con una influencia estructural sobre algunos sectores del relieve. Sin embargo, la relación no es continua ni uniforme, por lo que otros factores, como las diferencias litológicas y la dinámica propia de los cauces, también pueden intervenir en la configuración del paisaje.
 
-## 4.1. Respuesta directa a preguntas/hipótesis
+## 5.3. Comparación con la bibliografía
 
-> Responde P1, P2, etc., citando evidencia concreta (figuras/tablas).
+La orientación dominante obtenida para la Zona de la Falla de Camú, de aproximadamente 109.9°, es coherente con la dirección general ONO–ESE descrita por Escuder Viruete et al. (2021) para el segmento occidental de esta estructura entre Imbert y La Isabela. Esta coincidencia respalda la consistencia de la geometría utilizada en el análisis.
 
-## 4.2. Interpretación conectada con teoría
+A escala regional, Escuder-Viruete y Pérez (2020) describen el norte de La Española como un territorio condicionado por sistemas de fallas y bloques tectónicos asociados a la convergencia oblicua entre las placas del Caribe y Norteamérica. En este contexto, la similitud de orientación identificada entre algunos tramos de los ríos, las laderas de mayor pendiente y la Zona de la Falla de Camú puede interpretarse como parte de una organización estructural más amplia del relieve.
 
-> Vuelve a los conceptos del checklist y muestra que los entiendes:
-> qué significa el patrón, qué no significa, y bajo qué supuestos.
+Prentice et al. (2003), aunque estudiaron la cercana Zona de la Falla Septentrional y no la Falla de Camú, documentaron expresiones geomorfológicas asociadas al fallamiento, como escarpes y terrazas fluviales desplazadas. Este antecedente muestra que las fallas activas del norte dominicano pueden dejar señales reconocibles en el relieve y el drenaje. Sin embargo, los resultados del presente estudio no permiten demostrar actividad tectónica reciente ni atribuir exclusivamente a la falla las formas observadas.
 
-## 4.3. Implicaciones biogeográficas/ecológicas (y conservación si aplica)
+En conjunto, la bibliografía regional es compatible con la interpretación obtenida, pero también refuerza la necesidad de considerar otros controles, especialmente la litología y la dinámica fluvial.
 
-> ¿Qué sugiere tu análisis sobre procesos, filtros ambientales, dispersión, estructura espacial, heterogeneidad?
+## 5.4. Alcance y limitaciones
 
-# 5. Aporte del trabajo
+El análisis permite identificar asociaciones espaciales y direccionales entre la Zona de la Falla de Camú, los principales cauces y las laderas de mayor pendiente. Sin embargo, estas asociaciones no demuestran por sí mismas que la falla sea la causa directa de las formas observadas ni permiten establecer actividad tectónica reciente.
 
-> En 3–6 líneas: ¿qué aporta tu trabajo?
-> (Puede ser metodológico: “muestra cómo…”; o conceptual: “sugiere que…”)
+Entre las principales limitaciones se encuentran la resolución y procedencia del modelo digital de elevación, la escala 1:250,000 de la cartografía geológica y el carácter cualitativo de la comparación litológica. Además, el corredor de 10 km utilizado corresponde a un ámbito operativo de análisis y no a un límite físico de influencia de la falla. La confirmación de un control tectónico requeriría información adicional de campo, cartografía de mayor detalle y, según el caso, datos geofísicos o cronológicos.
 
-# 6. Limitaciones
+# 6. Auditoría crítica de IA
 
-> Lista 3–6 limitaciones **reales**:
+Durante el desarrollo del trabajo se identificaron algunas interpretaciones y términos propuestos inicialmente por la IA que requirieron revisión. Entre ellos se incluyeron expresiones como “morfotopográfico”, “vertientes empinadas”, “escarpes”, “morfometría fluvial” y “control litológico”, algunas de las cuales ampliaban el alcance real del análisis o sugerían procedimientos que finalmente no fueron realizados.
 
-* Dataset (muestra, variables, escala)
-* Método (supuestos, sensibilidad a parámetros, distancia, transformación)
-* Generalización (qué NO puedes concluir)
+Por ejemplo, las denominadas inicialmente “vertientes empinadas” fueron redefinidas como laderas de mayor pendiente, ya que el análisis utilizó específicamente el 10 % de las pendientes más altas del área de estudio. Asimismo, se eliminó la referencia a escarpes porque estos no fueron identificados ni medidos de manera independiente, y “control litológico” fue sustituido por comparación con la cartografía geológica, debido a que esta parte del análisis fue cualitativa.
+
+También se revisó el uso de las tolerancias de ±10°, ±15° y ±20°. Estos valores fueron utilizados como rangos exploratorios de comparación y no como umbrales establecidos por la bibliografía. Por esta razón, se evitó presentarlos como un criterio geomorfológico estándar.
+
+Finalmente, se corrigió una confusión sobre la procedencia de los datos: que la red hidrográfica hubiera sido derivada de ALOS-PALSAR no implicaba que el DEM utilizado posteriormente en R tuviera la misma procedencia.
 
 # 7. Conclusiones
 
-> 3–6 bullets o un párrafo corto.
-> Deben ser defendibles y estar sustentadas en resultados.
+Los resultados muestran que la Zona de Falla de Camú presenta una relación reconocible con la configuración del relieve y del drenaje, aunque esta relación no es uniforme en toda el área de estudio. La coincidencia espacial y direccional observada entre la falla, determinados tramos de los cauces y las laderas de mayor pendiente es compatible con una influencia estructural parcial, pero no permite atribuir exclusivamente a la falla la organización del paisaje.
+
+Las laderas de mayor pendiente muestran una mayor similitud de orientación con la Zona de Falla de Camú en sus proximidades, y esta relación disminuye al aumentar la distancia. Este patrón evidencia una asociación direccional entre parte del relieve y la estructura, aunque no se presenta de manera continua y debe considerarse junto con otros factores, como las diferencias litológicas presentes en el área.
+
+En el drenaje, los ríos Camú y Bajabonico presentan comportamientos distintos. El río Camú muestra una mayor similitud de orientación con la falla en los sectores más próximos y una disminución progresiva al alejarse, mientras que en el río Bajabonico la similitud direccional se mantiene relativamente constante entre las franjas analizadas. Esto indica que la relación entre drenaje y estructura es más evidente en determinados tramos y no constituye un patrón uniforme para ambos cauces.
+
+En conjunto, el estudio identifica asociaciones espaciales y direccionales compatibles con un posible control estructural de la Zona de Falla de Camú sobre sectores del relieve y del drenaje. Sin embargo, estas asociaciones no constituyen una demostración de actividad tectónica reciente ni de un control tectónico exclusivo sobre las formas observadas.
 
 # Referencias
 
-<!-- Si usas bibliografía con .bib, activa:
-bibliography: referencias.bib
-y cita con [@clave] -->
 
-# Apéndice A. Bitácora de decisiones (incluye IA)
 
-> Registra decisiones clave y evidencia de verificación.
-> No es “para delatarte”: es para mostrar trazabilidad.
-
-## A.1. Decisiones analíticas
-
-* Transformación elegida: … (por qué)
-* Distancia elegida: … (por qué)
-* Parámetros clave: … (por qué)
-* Alternativas probadas: … (qué cambió)
-
-## A.2. Uso de IA (si aplica)
-
-> Si usaste IA, documenta **qué preguntaste** y **cómo verificaste**.
-
-* Objetivo de la consulta: …
-* Resumen de la respuesta recibida: …
-* Cómo verifiqué (doc, ayuda de R, manual, paper, etc.): …
-* Qué adopté y qué descarté: …
-
----
+```{r session-info, include=FALSE}
+sessionInfo()
+```
