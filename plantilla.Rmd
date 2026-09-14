@@ -1,5 +1,5 @@
 ---
-title: "Control estructural del relieve y drenaje asociado a la Zona de la Falla de Camú, norte de la República Dominicana"
+title: "Evaluación del posible control estructural sobre el relieve y el drenaje de la zona de la Falla de Camú, norte de la República Dominicana"
 author:
   - "Gladiber Hernández (Matrícula n/a)"
 course: "Geomorfología"
@@ -7,6 +7,8 @@ practice: "Práctica 01 – Ejercicio 04: Geomorfología estructural: caso contr
 date: "`r format(Sys.Date(), '%Y-%m-%d')`"
 bibliography: referencias.bib
 link-citations: true
+lang: es
+toc-title: "Contenido"
 nocite: '@*'
 output:
   bookdown::pdf_document2:
@@ -34,83 +36,159 @@ if (!all(has_pkg)) {
 invisible(sapply(names(has_pkg)[has_pkg], library, character.only = TRUE))
 ```
 
-# Resumen
+## Resumen
 
-Este estudio evalúa en qué medida la Zona de la Falla de Camú se relaciona con la configuración del relieve y la organización del drenaje en el norte de la República Dominicana. Se utilizaron la traza de la falla, un modelo digital de elevación, una red de drenaje derivada de ALOS-PALSAR mediante GRASS GIS, la hidrografía nominal de los ríos Camú y Bajabonico y cartografía geológica del Servicio Geológico Nacional. El análisis se realizó dentro de un corredor de 10 km alrededor de la falla. Se calcularon la pendiente y la orientación de las laderas, la dirección dominante de la falla y la orientación de los segmentos fluviales. Posteriormente, se comparó su correspondencia angular, considerando compatibles las orientaciones con una diferencia máxima de 20°, y se examinó su variación en las franjas de 0–1 km, 1–3 km y 3–10 km. Los resultados muestran una asociación espacial y direccional variable entre la falla, algunas vertientes empinadas y determinados tramos de los ríos analizados, pero no una correspondencia continua en todo el corredor. Esto sugiere que la estructura geológica podría influir localmente en el relieve y el drenaje, junto con otros factores como la litología y los procesos erosivos. Sin embargo, estas asociaciones geomorfológicas no demuestran por sí solas actividad tectónica reciente. La principal limitación corresponde a la resolución y procedencia de los datos utilizados, así como a la precisión de las capas geológicas e hidrográficas.
+Este estudio evalúa en qué medida el relieve y el drenaje de la zona de la Falla de Camú, en el norte de la República Dominicana, presentan patrones compatibles con un posible control estructural. Se utilizaron la traza cartográfica de la falla, un modelo digital de elevación, una red hidrográfica derivada de ALOS-PALSAR, la hidrografía nominal de los ríos Camú y Bajabonico y cartografía geológica del Servicio Geológico Nacional. El análisis se realizó dentro de un ámbito de hasta 10 km a cada lado de la traza.
 
-**Palabras clave:** geomorfología estructural; Zona de la Falla de Camú; drenaje; orientación; República Dominicana
+Se calculó la orientación general de la traza y se comparó con la orientación de los segmentos de los ríos y de las laderas de mayor pendiente. También se evaluó cómo cambia esta correspondencia en las franjas de 0–1 km, 1–3 km y 3–10 km. La orientación general de la traza fue de aproximadamente 109.9°. En el río Camú y en las laderas de mayor pendiente, la correspondencia direccional fue mayor cerca de la traza y disminuyó con la distancia. En el río Bajabonico, en cambio, los valores se mantuvieron relativamente estables entre las franjas analizadas.
+
+Los resultados muestran que existen relaciones espaciales y direccionales compatibles con un posible control estructural, aunque estas no se manifiestan de manera uniforme en todo el ámbito de estudio. La cartografía geológica también muestra que la traza y los cauces atraviesan diferentes unidades geológicas, por lo que la interpretación debe considerar otros factores, como la litología y los procesos erosivos. Las asociaciones identificadas no permiten, por sí solas, establecer actividad tectónica reciente.
+
+**Palabras clave:** geomorfología estructural; Falla de Camú; drenaje; relieve; orientación; República Dominicana.
 
 # 1. Introducción
 
 ## 1.1. Contexto y problema geomorfológico
 
-Presentar la Zona de la Falla de Camú, el contexto geomorfológico regional y la posible relación estructura–relieve–drenaje. Introducir los ríos Camú y Bajabonico como cauces principales del análisis.
+La zona de la Falla de Camú se localiza en el norte de la República Dominicana y presenta contrastes de elevación, laderas con diferentes pendientes y una red de drenaje formada por numerosos cauces. Dentro de este ámbito, los ríos Camú y Bajabonico son los principales cauces considerados en el análisis.
+
+Desde la geomorfología estructural, una falla puede influir en la organización del relieve y del drenaje, por ejemplo mediante cambios de pendiente, alineamientos o tramos de cauces con direcciones semejantes a la estructura. Sin embargo, estas relaciones también pueden estar condicionadas por la litología y por los procesos erosivos [@pedraza1996; @gutierrez2008].
+
+En este trabajo se evalúa si algunas características del relieve y del drenaje de la zona de la Falla de Camú presentan patrones espaciales y direccionales compatibles con un posible control estructural.
 
 ## 1.2. Justificación
 
-Explicar por qué es necesario evaluar cuantitativamente la relación entre la falla, el relieve y los cauces, evitando asumir control tectónico solo por proximidad espacial.
+Analizar la relación entre una falla, el relieve y el drenaje permite evaluar si determinadas formas del terreno y algunos tramos de los cauces presentan una organización compatible con la estructura geológica. Sin embargo, la proximidad a una falla o una orientación semejante no son suficientes, por sí solas, para demostrar un control estructural.
+
+Por esta razón, en este estudio se compara la orientación general de la traza de la Falla de Camú con la orientación de las laderas de mayor pendiente y de los ríos Camú y Bajabonico. También se evalúa cómo cambia esta correspondencia con la distancia a la traza y se utiliza la cartografía geológica como apoyo para la interpretación. Este enfoque permite reconocer posibles relaciones estructurales sin asumir que toda la configuración del relieve y del drenaje se debe a la falla [@anderson2010; @burbank2012].
 
 ## 1.3. Preguntas de investigación
 
 **Pregunta principal**
 
-¿En qué medida la Zona de la Falla de Camú ejerce un control estructural reconocible sobre la configuración del relieve y la organización del drenaje en el norte de la República Dominicana?
+¿En qué medida el relieve y el drenaje de la zona de la Falla de Camú presentan patrones compatibles con un posible control estructural?
 
 **Preguntas específicas**
 
-a. ¿Existe correspondencia entre la orientación de la Zona de la Falla de Camú y la orientación de vertientes empinadas, escarpes y otros rasgos lineales del relieve?
+a. ¿Existe correspondencia entre la orientación general de la traza de la Falla de Camú y la orientación de las laderas de mayor pendiente, y cómo cambia esta relación con la distancia a la traza?
 
-b. ¿En qué medida la orientación y configuración de los ríos Camú y Bajabonico muestran una asociación espacial y direccional con la Zona de la Falla de Camú?
+b. ¿En qué medida la orientación de los ríos Camú y Bajabonico coincide con la orientación general de la traza de la Falla de Camú, y cómo cambia esta relación con la distancia a la traza?
 
 
 # 2. Marco teórico
 
-## 2.1. Geomorfología estructural y tectónica
+## 2.1. Geomorfología estructural
 
-## 2.2. Orientación de fallas y vertientes
+La geomorfología estructural estudia cómo las estructuras geológicas, como fallas, pliegues y fracturas, pueden influir en la forma y organización del relieve. Esta influencia puede observarse en la disposición de laderas, valles, alineamientos y redes de drenaje. Sin embargo, la configuración del paisaje también depende de otros factores, como la litología y los procesos erosivos [@pedraza1996; @gutierrez2008].
+
+La geomorfología tectónica está relacionada con este enfoque, pero se interesa especialmente por la respuesta del paisaje a la deformación de la corteza y por las evidencias que permiten estudiar actividad tectónica y deformación reciente [@burbank2012]. En este trabajo se adopta principalmente un enfoque de geomorfología estructural, ya que se evalúa la relación entre la traza de la Falla de Camú, el relieve y el drenaje, sin medir directamente desplazamientos recientes ni tasas de deformación.
+
+## 2.2. Relación entre fallas y formas del relieve
+
+Las fallas pueden influir en la organización del relieve y estar asociadas con cambios de pendiente, alineamientos topográficos, escarpes, valles lineales y contrastes entre sectores elevados y deprimidos. Estas formas pueden conservar información sobre la estructura geológica, aunque también pueden ser modificadas por la erosión y por las características de las rocas [@anderson2010; @burbank2012].
+
+En este estudio no se identificaron ni midieron de manera independiente escarpes o desplazamientos del terreno. El análisis del relieve se concentró en las laderas de mayor pendiente y en la comparación de su orientación con la orientación de la traza de la Falla de Camú.
 
 ## 2.3. Control estructural del drenaje
 
-## 2.4. Litología como control complementario
+La organización de una red de drenaje puede estar influida por estructuras geológicas. Los cauces pueden seguir zonas de debilidad asociadas con fallas o fracturas, presentar tramos relativamente rectilíneos, cambios de dirección o direcciones semejantes a las de las estructuras presentes en el terreno [@pedraza1996; @gutierrez2008; @anderson2010].
 
+Sin embargo, la dirección de los ríos no depende únicamente de las estructuras geológicas. También puede estar condicionada por la pendiente regional, la litología y la evolución erosiva del paisaje. Por esta razón, una coincidencia en orientación entre un cauce y una falla debe interpretarse como una posible evidencia de control estructural y no como una demostración directa de causalidad [@gutierrez2008].
+
+## 2.4. Influencia de la litología en el relieve y el drenaje
+
+La litología se refiere al tipo y a las características de las rocas que forman el terreno. Las diferencias en su resistencia frente a la meteorización y la erosión pueden influir en la pendiente de las laderas, la forma de los valles y la organización del drenaje [@pedraza1996; @gutierrez2008].
+
+Por esta razón, una coincidencia entre la orientación de una falla, las laderas y los cauces no debe atribuirse únicamente a la estructura geológica. También es necesario considerar las unidades geológicas presentes en el área. En este trabajo, la cartografía geológica se utiliza de manera cualitativa para apoyar esta comparación y no para realizar un análisis cuantitativo de la resistencia de las rocas.
 
 # 3. Materiales y métodos
 
-## 3.1. Área de estudio
+## 3.1. Ámbito de estudio
 
-El área de estudio se localiza en el norte de la República Dominicana y comprende un corredor asociado a la Zona de la Falla de Camú. El análisis se extiende desde el valle del río Bajabonico y su salida hacia la bahía de La Isabela, al oeste, hasta el entorno de Sabaneta de Yásica, al este.
+El ámbito de estudio se localiza en el norte de la República Dominicana, en la zona de la Falla de Camú. Se extiende desde el valle del río Bajabonico y su salida hacia la bahía de La Isabela, al oeste, hasta el entorno de Sabaneta de Yásica, al este.
 
-Como ventana preliminar de análisis se utiliza un corredor de 10 km alrededor de la traza seleccionada de la Zona de la Falla de Camú. Este corredor funciona como ámbito operativo para integrar la falla, la red hidrográfica y el relieve; no se interpreta como un límite físico de influencia tectónica.
+Para realizar el análisis se definió un ámbito de hasta 10 km de distancia a cada lado de la traza de la Falla de Camú utilizada como referencia. Esta delimitación permitió analizar, dentro de un mismo espacio, la orientación de la traza, las laderas de mayor pendiente y los ríos Camú y Bajabonico.
+
+Los 10 km corresponden únicamente a una delimitación metodológica del estudio. No representan el ancho de la zona de falla ni un límite físico de su posible influencia sobre el relieve o el drenaje.
 
 ## 3.2. Datos y fuentes
 
-La geometría de trabajo de la Zona de la Falla de Camú se obtuvo a partir de la capa *Fallas 2021* de ArcGIS Online (Item ID: `87841c12d9364c8184f0c73cb35b561e`). Los segmentos fueron seleccionados y unidos en QGIS y posteriormente contrastados con la cartografía geológica y las memorias explicativas del Servicio Geológico Nacional (SGN).
+La traza de trabajo de la Falla de Camú se obtuvo a partir de la capa *Fallas 2021* de ArcGIS Online (Item ID: 87841c12d9364c8184f0c73cb35b561e). Los segmentos correspondientes a la zona de estudio fueron seleccionados y unidos en QGIS. Esta traza se utilizó como referencia para calcular su orientación, medir distancias y comparar su relación con el relieve y el drenaje. Su ubicación también fue contrastada con la cartografía geológica y las memorias explicativas del Servicio Geológico Nacional (SGN).
 
-Se utilizaron dos representaciones complementarias de la red hidrográfica. La primera corresponde a una red derivada mediante algoritmos de hidromorfometría de GRASS GIS a partir de un DEM ALOS-PALSAR, utilizada para representar la organización general del drenaje. La segunda corresponde a una red hidrográfica nominal, utilizada para identificar y extraer específicamente los ríos Camú y Bajabonico.
+Para representar el drenaje se utilizaron dos conjuntos de datos. El primero corresponde a una red hidrográfica derivada de un DEM ALOS-PALSAR mediante herramientas de GRASS GIS, utilizada para mostrar la organización general del drenaje. El segundo corresponde a una red hidrográfica nominal, utilizada para identificar y analizar específicamente los ríos Camú y Bajabonico.
 
-La topografía se deriva de un modelo digital de elevación obtenido mediante `elevatr`. La fuente/producto específico del DEM se documentará de forma explícita antes de la versión final. La cartografía geológica del SGN se utilizará como control interpretativo para distinguir posibles efectos estructurales de respuestas asociadas a cambios litológicos.
+El relieve se analizó mediante un modelo digital de elevación obtenido en R con el paquete `elevatr`. El raster utilizado presenta una resolución espacial aproximada de 71.7 m y fue trabajado en el sistema de coordenadas WGS 84 / UTM zona 19N (EPSG:32619). A partir de este modelo se representó la elevación y se calcularon la pendiente y la orientación del terreno.
 
-La figura interpretativa del contexto geológico e hidrográfico fue elaborada en QGIS mediante la superposición de la Zona de la Falla de Camú, la red hidrográfica y la cartografía geológica disponible.
+La cartografía geológica del SGN se utilizó como apoyo para reconocer las principales unidades geológicas presentes en la zona de estudio y para interpretar si algunos patrones del relieve y del drenaje podían estar relacionados también con diferencias litológicas. Esta comparación fue de carácter cualitativo.
 
-| Dato | Fuente | Uso principal |
-|---|---|---|
-| Zona de la Falla de Camú | *Fallas 2021*, ArcGIS Online + verificación SGN | Geometría estructural de referencia |
-| Cartografía geológica | SGN, 1:250,000 y hojas 1:50,000 | Verificación de la falla y control litológico |
-| Red hidrográfica | Red derivada de ALOS-PALSAR mediante GRASS GIS | Contexto de drenaje y análisis de Camú y Bajabonico |
-| Modelo digital de elevación | `elevatr` (producto final por documentar) | Pendiente, orientación, hillshade y morfometría |
-| Mapa Topográfico Nacional | 1:50,000 | Referencia cartográfica |
+La Tabla \@ref(tab:datos-fuentes) resume los principales datos utilizados y su función dentro del análisis.
+
+```{r datos-fuentes, echo=FALSE}
+datos_fuentes <- data.frame(
+  Dato = c(
+    "Traza de la Falla de Camú",
+    "Cartografía geológica",
+    "Red hidrográfica",
+    "Ríos Camú y Bajabonico",
+    "Modelo digital de elevación"
+  ),
+  Fuente = c(
+    "Fallas 2021, ArcGIS Online + contraste con SGN",
+    "Servicio Geológico Nacional, escala 1:250,000 y hojas 1:50,000",
+    "Red derivada de DEM ALOS-PALSAR mediante GRASS GIS",
+    "Red hidrográfica nominal",
+    "elevatr; resolución aproximada de 71.7 m"
+  ),
+  Uso_principal = c(
+    "Orientación de referencia, medición de distancias y comparación con el relieve y el drenaje",
+    "Contexto geológico y comparación cualitativa",
+    "Representación general del drenaje",
+    "Análisis de orientación de los cauces",
+    "Elevación, pendiente y orientación del terreno"
+  )
+)
+
+knitr::kable(
+  datos_fuentes,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Datos y fuentes utilizados en el análisis geomorfológico de la zona de la Falla de Camú.",
+  col.names = c("Dato", "Fuente", "Uso principal")
+) |>
+  kableExtra::kable_styling(
+    latex_options = "HOLD_position",
+    position = "center"
+  ) |>
+  kableExtra::column_spec(1, width = "3.8cm") |>
+  kableExtra::column_spec(2, width = "5.5cm") |>
+  kableExtra::column_spec(3, width = "5.3cm") |>
+  kableExtra::row_spec(
+    1:nrow(datos_fuentes),
+    extra_latex_after = "\\addlinespace[2pt]"
+  )
+```
 
 ## 3.3. Preparación de los datos
 
-Los datos vectoriales utilizados en el análisis fueron transformados al sistema WGS 84 / UTM zona 19N (EPSG:32619) y recortados al área de estudio. La traza de la Zona de la Falla de Camú, previamente seleccionada y unificada en QGIS, se utilizó como referencia para delimitar el corredor de análisis.
+Las capas vectoriales utilizadas en el análisis fueron transformadas al sistema de coordenadas WGS 84 / UTM zona 19N (EPSG:32619), con unidades en metros. Esto permitió realizar de manera consistente los cálculos de distancia, longitud y orientación.
 
-La red hidrográfica fue recortada al mismo ámbito y se identificaron los ríos Camú y Bajabonico para su análisis individual. El modelo digital de elevación fue reproyectado al mismo sistema de coordenadas y utilizado para obtener la pendiente y el aspecto del terreno.
+La traza de trabajo de la Falla de Camú fue previamente seleccionada a partir de la capa *Fallas 2021*. Debido a que estaba representada por varios segmentos, estos fueron revisados y unidos en QGIS. A partir de esta traza se definió un ámbito de estudio de hasta 10 km de distancia a cada lado.
+
+La red hidrográfica general fue recortada a este ámbito. De manera independiente, se identificaron en la red hidrográfica nominal los ríos Camú y Bajabonico y se conservaron los tramos localizados dentro del mismo ámbito de estudio.
+
+El modelo digital de elevación fue recortado y enmascarado utilizando el límite del ámbito de estudio. Para concentrar el análisis en la superficie terrestre, las elevaciones inferiores a 0 m fueron excluidas. A partir del DEM preparado se calcularon la pendiente y el aspecto del terreno mediante el paquete `terra` en R. Estos productos fueron utilizados posteriormente para identificar y analizar las laderas de mayor pendiente.
 
 ## 3.4. Análisis
 
-### 3.4.1. Orientación de la falla y de los ríos Camú y Bajabonico
+El análisis se organizó en cuatro etapas. Primero se determinó la orientación de la traza de la Falla de Camú utilizada como referencia. Luego se comparó esta orientación con la de los ríos Camú y Bajabonico y con la orientación de las laderas de mayor pendiente. Finalmente, los resultados se observaron junto con la cartografía geológica disponible.
 
-Para analizar la relación entre la Zona de la Falla de Camú y los ríos Bajabonico y Camú, se comparó la dirección de la falla con la dirección de los cauces. Se calculó qué parte de cada río presenta una orientación similar a la falla, considerando como compatibles los segmentos con una diferencia máxima de 20°. También se evaluó cómo cambia esta relación según la distancia a la estructura, utilizando tres franjas: 0–1 km, 1–3 km y 3–10 km.
+### 3.4.1. Orientación de la traza de la Falla de Camú
+
+La traza de la Falla de Camú se descompuso en segmentos definidos entre vértices consecutivos. Para cada segmento se calculó su azimut a partir de sus coordenadas y posteriormente se transformó a una orientación entre 0° y 180°.
+
+Se utilizó este rango porque el análisis considera el alineamiento de los segmentos y no su sentido de recorrido. De esta manera, dos direcciones opuestas que representan el mismo eje, por ejemplo 110° y 290°, se consideran equivalentes.
+
+Para obtener una orientación general de la traza se calculó una media axial ponderada por la longitud de los segmentos. Esto significa que los segmentos de mayor longitud tuvieron mayor influencia en el resultado que los segmentos más cortos. La orientación general obtenida se utilizó como referencia para comparar posteriormente el drenaje y las laderas.
 
 ```{r funciones-orientacion}
 calcular_orientacion <- function(objeto_sf, nombre) {
@@ -245,7 +323,7 @@ red_grass <- sf::st_transform(
 )
 
 # ------------------------------------------------------------
-# 5. Crear el corredor de estudio de 10 km
+# 5. Crear el ámbito de estudio hasta 10 km de la traza
 # ------------------------------------------------------------
 
 area_estudio <- sf::st_buffer(
@@ -265,7 +343,7 @@ red_grass_estudio <- suppressWarnings(
 )
 
 # ------------------------------------------------------------
-# 7. Extraer los ríos Camú y Bajabonico
+# 7. Identificar los ríos Camú y Bajabonico
 # ------------------------------------------------------------
 
 rio_camu <- hidrografia[
@@ -285,6 +363,22 @@ rio_bajabonico <- hidrografia[
       ignore.case = TRUE
     ),
 ]
+
+# Recortar al ámbito de estudio
+
+rio_camu <- suppressWarnings(
+  sf::st_intersection(
+    rio_camu,
+    area_estudio
+  )
+)
+
+rio_bajabonico <- suppressWarnings(
+  sf::st_intersection(
+    rio_bajabonico,
+    area_estudio
+  )
+)
 
 # ------------------------------------------------------------
 # 8. Cargar el DEM original
@@ -333,17 +427,7 @@ dem_terrestre <- terra::ifel(
 )
 
 # ------------------------------------------------------------
-# 12. Reproyectar el DEM al CRS métrico de trabajo
-# ------------------------------------------------------------
-
-dem_terrestre <- terra::project(
-  dem_terrestre,
-  "EPSG:32619",
-  method = "bilinear"
-)
-
-# ------------------------------------------------------------
-# 13. Calcular pendiente y aspecto
+# 12. Calcular pendiente y aspecto
 # ------------------------------------------------------------
 
 pendiente_area <- terra::terrain(
@@ -530,13 +614,29 @@ tabla_proximidad <- rios_proximidad |>
 
 ```
 
-### 3.4.2. Orientación de las laderas de mayor pendiente
+### 3.4.2. Relación entre la traza y el drenaje
 
-Para evaluar la relación entre la Zona de Falla de Camú y el relieve, se analizaron las áreas de mayor pendiente, correspondientes al 10 % de pendientes más altas del área de estudio, equivalentes a valores de aproximadamente 15.9° o más. Luego se comparó la orientación de estas laderas con la orientación dominante de la falla y se evaluó cómo cambia esta relación según la distancia a la estructura.
+Los ríos Camú y Bajabonico se descompusieron en segmentos entre vértices consecutivos. Para cada segmento se calculó su orientación entre 0° y 180° y se comparó con la orientación general obtenida para la traza de la Falla de Camú.
+
+La diferencia angular se calculó tomando la menor diferencia posible entre ambas orientaciones. Se utilizaron tres márgenes exploratorios de comparación: ±10°, ±15° y ±20°. Estos márgenes permitieron observar qué proporción de la longitud de cada río presenta una orientación semejante a la orientación general de la traza. Los valores utilizados corresponden a rangos exploratorios del análisis y no a umbrales establecidos por la bibliografía.
+
+También se evaluó cómo cambia esta correspondencia con la proximidad a la traza. Para ello se calculó la distancia desde el punto medio de cada segmento fluvial hasta la traza de la Falla de Camú. Los segmentos se agruparon en tres franjas de distancia: 0–1 km, 1–3 km y 3–10 km.
+
+Para comparar la correspondencia según la distancia se utilizó el margen de ±20°. Los porcentajes se calcularon a partir de la longitud de los segmentos fluviales que cumplen este criterio respecto de la longitud total analizada en cada franja.
+
+### 3.4.3. Relación entre la traza y las laderas de mayor pendiente
+
+Para analizar la relación entre la traza de la Falla de Camú y el relieve se utilizaron la pendiente y el aspecto derivados del modelo digital de elevación. Se seleccionó el 10 % de las celdas o píxeles con mayores valores de pendiente dentro del ámbito de estudio. El umbral correspondió al percentil 90 de la distribución de pendientes, equivalente aproximadamente a 15.9° o más.
+
+El aspecto representa la dirección de máxima pendiente de cada celda. Para obtener una orientación lineal comparable con la traza de la falla, se calculó una orientación perpendicular al aspecto y se expresó entre 0° y 180°. Esta orientación se utilizó como una aproximación a la dirección en que se extiende lateralmente la ladera.
+
+La diferencia entre esta orientación y la orientación general de la traza de la Falla de Camú se calculó como una diferencia angular axial. Se consideraron compatibles las celdas con una diferencia máxima de ±20°.
+
+La correspondencia también se examinó según la proximidad a la traza, utilizando tres franjas: 0–1 km, 1–3 km y 3–10 km. Para cada franja se calculó el porcentaje de celdas de mayor pendiente cuya orientación cumplía el criterio de ±20°.
 
 ```{r orientacion-relieve}
 # ------------------------------------------------------------
-# Definir vertientes empinadas
+# Identificar las laderas de mayor pendiente
 # ------------------------------------------------------------
 
 # Revisar percentiles de la pendiente
@@ -551,8 +651,8 @@ percentiles_pendiente <- terra::global(
   }
 )
 
-# Umbral definitivo para vertientes empinadas:
-# percentil 90 de la pendiente del área de estudio
+# Umbral para las laderas de mayor pendiente:
+# percentil 90 de la pendiente del ámbito de estudio
 umbral_pendiente <- as.numeric(
   percentiles_pendiente[1, "X90."]
 )
@@ -565,12 +665,12 @@ mascara_empinadas <- terra::ifel(
 )
 
 # ------------------------------------------------------------
-# Orientación axial aproximada de vertientes/escarpes
+# Orientación lineal aproximada de las laderas
 # ------------------------------------------------------------
 
-# El aspect representa la dirección de máxima pendiente.
-# La orientación longitudinal aproximada de la vertiente
-# se considera perpendicular al aspect.
+# El aspecto representa la dirección de máxima pendiente.
+# Para obtener un alineamiento aproximado de la ladera,
+# se utiliza la dirección perpendicular al aspecto.
 
 orientacion_escarpe <- (
   aspecto_area + 90
@@ -596,7 +696,7 @@ diferencia_relieve <- terra::ifel(
 )
 
 # ------------------------------------------------------------
-# Franjas de proximidad a la falla
+# Franjas de proximidad a la traza de la Falla de Camú
 # ------------------------------------------------------------
 
 falla_union <- sf::st_union(
@@ -688,26 +788,33 @@ tabla_relieve <- dplyr::bind_rows(
 
 ```
 
-### 3.4.3. Comparación con la cartografía geológica
+### 3.4.4. Comparación con la cartografía geológica
 
-La cartografía geológica se utilizó para comparar visualmente la ubicación de la Zona de la Falla de Camú, los principales cauces y las unidades geológicas presentes en el área de estudio. Esta comparación permitió considerar si algunos cambios en el relieve o en el trazado de los ríos podían estar relacionados también con diferencias en los materiales geológicos y no únicamente con la falla.
+La cartografía geológica del Servicio Geológico Nacional se utilizó para observar la relación espacial entre la traza de la Falla de Camú, los principales cauces y las unidades geológicas presentes en la zona de estudio.
+
+Esta comparación fue cualitativa. Su objetivo fue considerar si algunos patrones observados en el relieve y en el drenaje podían estar relacionados también con diferencias entre las unidades geológicas y no únicamente con la presencia de la falla. No se realizaron cálculos estadísticos ni análisis cuantitativos por unidad litológica.
 
 ## 3.5. Limitaciones y control de calidad
 
-El análisis presenta algunas limitaciones relacionadas con la resolución y procedencia del modelo digital de elevación, la escala de la cartografía geológica y la precisión de las capas de fallas e hidrografía utilizadas. Todas las capas fueron llevadas al mismo sistema de coordenadas (EPSG:32619) y se revisaron sus geometrías antes del análisis. Los resultados permiten identificar asociaciones espaciales y direccionales entre la falla, el relieve y el drenaje, pero no permiten demostrar por sí solos actividad tectónica reciente.
+El análisis presenta limitaciones relacionadas con la resolución de los datos y con el nivel de detalle de los procedimientos utilizados. El modelo digital de elevación tiene una resolución espacial aproximada de 71.7 m, por lo que permite reconocer patrones generales del relieve, pero no formas pequeñas o de detalle. La cartografía geológica utilizada también presenta diferencias de escala, principalmente entre la cartografía 1:250,000 y las hojas disponibles a 1:50,000.
+
+La traza utilizada constituye una representación cartográfica de la Falla de Camú y no define el ancho físico de la zona de falla. De igual manera, el ámbito de hasta 10 km se estableció únicamente como una delimitación metodológica y no representa un límite de influencia tectónica.
+
+La orientación de los ríos y de las laderas se comparó con una orientación general de la traza. Por esta razón, el análisis permite reconocer patrones generales de correspondencia, pero no determina la relación entre cada elemento y el tramo local de falla más cercano. Además, los márgenes angulares utilizados y la selección del 10 % de mayores pendientes corresponden a criterios exploratorios adoptados para este estudio.
+
+Como medida de control, los datos se trabajaron en un sistema de coordenadas común, WGS 84 / UTM zona 19N (EPSG:32619), y los resultados se contrastaron con la cartografía geológica disponible. Las asociaciones espaciales y direccionales identificadas permiten evaluar un posible control estructural, pero no demuestran por sí solas actividad tectónica reciente [@burbank2012; @gutierrez2008].
 
 # 4. Resultados
 
-## 4.1. Área de estudio y características generales del relieve
+## 4.1. Ámbito de estudio y características generales del relieve
 
-La Figura 1 muestra las características generales del relieve en el área de estudio. En la Figura 1A se observa la distribución de la elevación, con los sectores de menor altitud principalmente hacia el norte del corredor y áreas más elevadas hacia el sur. La Figura 1B muestra la distribución de las pendientes, que son mayores en los sectores de relieve más accidentado. En ambos paneles se presenta la ubicación de la Zona de la Falla de Camú y de los ríos Bajabonico y Camú.
+La Figura \@ref(fig:fig-caracteristicas-relieve) muestra las características generales del relieve dentro del ámbito de estudio. En el panel A se observa la distribución de la elevación, con sectores de menor altitud principalmente hacia el norte y áreas más elevadas hacia el sur. En el panel B se muestra la distribución de las pendientes, que aumentan en los sectores de relieve más accidentado.
 
-```{r fig-caracteristicas-relieve, echo=FALSE, fig.cap="Características generales del relieve en el área de estudio de la Zona de Falla de Camú: A) elevación; B) pendiente del terreno. Se muestran la Zona de Falla de Camú, los ríos Camú y Bajabonico y la red de drenaje.", fig.width=9, fig.height=4.5, out.width="100%"}
+En ambos paneles se presentan la traza de la Falla de Camú, los ríos Camú y Bajabonico y la red hidrográfica general.
 
-dem_figura <- terra::crop(
-  dem_terrestre,
-  terra::ext(pendiente_area)
-)
+```{r fig-caracteristicas-relieve, echo=FALSE, fig.cap="Características generales del relieve en el ámbito de estudio de la zona de la Falla de Camú: A) elevación; B) pendiente del terreno. Se muestran la traza de la Falla de Camú, los ríos Camú y Bajabonico y la red hidrográfica general.", fig.width=9, fig.height=4.5, out.width="100%"}
+
+dem_figura <- dem_terrestre
 
 options(scipen = 999)
 
@@ -738,10 +845,10 @@ plot(sf::st_geometry(falla_camu),
 legend(
   "bottomleft",
   legend = c(
-    "Zona de Falla de Camú",
+    "Traza de la Falla de Camú",
     "Río Bajabonico",
     "Río Camú",
-    "Red de drenaje"
+    "Red hidrográfica"
   ),
   col = c("red", "blue", "darkgreen", "grey60"),
   lwd = c(1.5, 1.2, 1.2, 0.8),
@@ -773,11 +880,11 @@ plot(sf::st_geometry(falla_camu),
 
 par(op)
 ```
-## 4.2. Orientación de la Zona de la Falla de Camú
+## 4.2. Orientación de la traza de la Falla de Camú
 
-La orientación de la Zona de la Falla de Camú se concentra principalmente alrededor de los 110°, con una orientación media axial ponderada de aproximadamente 109.9°, correspondiente a una dirección general ONO–ESE (Figura X).
+La orientación de los segmentos de la traza se concentra principalmente alrededor de los 110°. La orientación media axial ponderada por longitud fue de aproximadamente 109.9°, correspondiente a una dirección general ONO–ESE (Figura \@ref(fig:orientacion-falla)).
 
-```{r fig-orientacion-falla, echo=FALSE, fig.cap="Distribución de la longitud de la Zona de la Falla de Camú según orientación. La línea discontinua indica la orientación media axial ponderada de 109.9°."}
+```{r orientacion-falla, echo=FALSE, fig.cap="Distribución de la longitud de la traza de la Falla de Camú según su orientación. La línea discontinua indica la orientación media axial ponderada de 109.9°."}
 if (exists("orientacion_falla")) {
   ggplot2::ggplot(
     orientacion_falla,
@@ -791,7 +898,7 @@ if (exists("orientacion_falla")) {
 ) +
     ggplot2::scale_x_continuous(breaks = seq(0, 180, 20), limits = c(0, 180)) +
     ggplot2::labs(
-      title = "Distribución de la orientación de la Zona de Falla de Camú",
+      title = "Distribución de la orientación de la traza de la Falla de Camú",
        x = "Orientación (°)",
        y = "Longitud de traza (km)"
     ) +
@@ -799,8 +906,14 @@ if (exists("orientacion_falla")) {
 }
 ```
 
-## 4.3. Orientación de los ríos Camú y Bajabonico
-Se probaron tres márgenes angulares para observar cómo cambia la correspondencia entre la dirección de los cauces y la orientación de la falla.
+## 4.3. Relación entre la traza y los ríos Camú y Bajabonico
+
+La correspondencia entre la orientación de los ríos Camú y Bajabonico y la orientación general de la traza varía según el rango de diferencia angular utilizado. Con un rango de ±10°, la longitud correspondiente representa 10.0 % para el río Camú y 11.5 % para el río Bajabonico. Con ±15°, los valores aumentan a 15.9 % y 17.3 %, respectivamente. Con ±20°, ambos ríos presentan 24.5 % de correspondencia. Los resultados según los distintos rangos de diferencia angular se resumen en el Cuadro \@ref(tab:tabla-proximidad-drenaje).
+
+Al utilizar un rango de diferencia angular de ±20°, el río Camú presenta una disminución de la correspondencia a medida que aumenta la distancia a la traza. Entre 0 y 1 km, el 38.6 % de la longitud analizada presenta una orientación compatible con la orientación general de la traza. Esta proporción disminuye a 23.0 % entre 1 y 3 km y a 10.6 % entre 3 y 10 km. La variación de esta correspondencia según la distancia a la traza se muestra en la Figura \@ref(fig:fig-proximidad-drenaje).
+
+El río Bajabonico presenta un comportamiento diferente. La correspondencia se mantiene relativamente estable entre las tres franjas de distancia: 25.0 % entre 0 y 1 km, 23.8 % entre 1 y 3 km y 24.4 % entre 3 y 10 km.
+
 ```{r tabla-correspondencia-angular}
 if (exists("orientacion_camu") && exists("orientacion_bajabonico")) {
   tabla_angular <- data.frame(
@@ -822,11 +935,15 @@ knitr::kable(
   tabla_angular,
   col.names = c(
     "Río",
-    "Tolerancia de dirección (°)",
+    "Rango de diferencia angular",
     "Correspondencia (%)"
   ),
-  caption = "Correspondencia direccional de los ríos Camú y Bajabonico con la Zona de la Falla de Camú según distintos rangos de comparación."
-)
+  caption = "Correspondencia de la longitud de los ríos Camú y Bajabonico con la orientación general de la traza de la Falla de Camú según distintos rangos de diferencia angular."
+) |>
+  kableExtra::kable_styling(
+    latex_options = "HOLD_position",
+    position = "center"
+  )
 
 }
 ```
@@ -841,12 +958,11 @@ knitr::kable(
     "Longitud compatible (km)",
     "Correspondencia (%)"
   ),
-  caption = "Correspondencia direccional de los ríos Camú y Bajabonico según la distancia a la Zona de la Falla de Camú."
+  caption = "Correspondencia de los ríos Camú y Bajabonico con la orientación general de la traza de la falla según la distancia."
 )
 ```
-La correspondencia direccional del río Camú varía claramente con la proximidad a la Zona de la Falla de Camú. Dentro del primer kilómetro, el 38.6 % de la longitud analizada presenta una orientación situada dentro de ±20° de la orientación dominante de la falla. Esta proporción disminuye a 23.0 % entre 1 y 3 km y a 10.6 % entre 3 y 10 km. El río Bajabonico presenta un comportamiento diferente, con valores relativamente constantes de aproximadamente 24–25 % en las tres franjas de distancia.
 
-```{r fig-proximidad-drenaje, fig.cap="Correspondencia de orientación de los ríos Camú y Bajabonico con la Zona de la Falla de Camú según la distancia a la falla."}
+```{r fig-proximidad-drenaje, fig.cap="Variación de la correspondencia de orientación de los ríos Camú y Bajabonico según la distancia a la traza de la falla. Se utiliza un rango de diferencia angular de ±20°."}
 
 ggplot2::ggplot(
   tabla_proximidad,
@@ -875,7 +991,8 @@ ggplot2::ggplot(
   ggplot2::ylim(0, 45) +
   ggplot2::theme_minimal()
 ```
-```{r fig-mapa-drenaje-relieve, echo=FALSE, fig.cap="Relación espacial de los ríos Camú y Bajabonico con la Zona de la Falla de Camú. Se resaltan los tramos de los cauces con orientación similar a la falla, considerando una tolerancia de ±20°.", fig.width=9, fig.height=6, out.width="100%"}
+La distribución espacial de los segmentos que cumplen el criterio de diferencia angular de hasta 20° se presenta en la Figura \@ref(fig:fig-mapa-drenaje-relieve).
+```{r fig-mapa-drenaje-relieve, echo=FALSE, fig.cap="Distribución espacial de los segmentos de los ríos Camú y Bajabonico cuya orientación presenta una diferencia máxima de ±20° respecto de la orientación general de la traza de la Falla de Camú.", fig.width=9, fig.height=6, out.width="100%"}
 
 # convertir segmentos de los ríos a líneas
 segmentos_camu_sf <- segmentos_a_sf(
@@ -888,7 +1005,7 @@ segmentos_bajabonico_sf <- segmentos_a_sf(
   sf::st_crs(falla_camu)
 )
 
-# seleccionar solo los tramos con orientación similar a la falla
+# seleccionar los tramos compatibles con la orientación general de la traza
 segmentos_camu_compat <- segmentos_camu_sf[
   segmentos_camu_sf$diferencia_falla <= 20, ]
 
@@ -921,18 +1038,18 @@ options(scipen = 999)
 plot(
   dem_mapa,
   col = terrain.colors(40),
-  main = "Tramos de los ríos con orientación similar a la falla",
+  main = "Tramos de los ríos con orientación compatible con la traza",
   axes = TRUE,
   xlab = "Este UTM (m)",
   ylab = "Norte UTM (m)"
 )
 
-# red general
+# red hidrográfica general
 plot(sf::st_geometry(red_grass_estudio),
      add = TRUE, col = "grey70", lwd = 0.3)
 
 # Ríos completos
-# Tramos sin orientación similar a la falla
+# Tramos sin orientación compatible con la traza
 plot(
   sf::st_geometry(segmentos_bajabonico_no_compat),
   add = TRUE,
@@ -947,7 +1064,7 @@ plot(
   lwd = 1.5
 )
 
-# Zona de Falla de Camú
+# Traza de la Falla de Camú
 plot(
   sf::st_geometry(falla_camu),
   add = TRUE,
@@ -955,7 +1072,7 @@ plot(
   lwd = 1.8
 )
 
-# Bajabonico: orientación similar
+# Bajabonico: orientación compatible
 plot(
   sf::st_geometry(segmentos_bajabonico_compat),
   add = TRUE,
@@ -963,7 +1080,7 @@ plot(
   lwd = 2.8
 )
 
-# Camú: orientación similar
+# Camú: orientación compatible
 plot(
   sf::st_geometry(segmentos_camu_compat),
   add = TRUE,
@@ -975,10 +1092,10 @@ legend(
   "topright",
   inset = c(0.02, 0.16),
   legend = c(
-    "Falla de Camú",
-    "Sin similitud",
-    "Bajabonico similar",
-    "Camú similar"
+  "Traza de la Falla de Camú",
+  "Diferencia angular > 20°",
+  "Bajabonico: diferencia angular ≤ 20°",
+  "Camú: diferencia angular ≤ 20°"
   ),
   col = c(
     "red",
@@ -992,9 +1109,11 @@ legend(
   cex = 0.65
 )
 ```
-## 4.4. Orientación de las laderas de mayor pendiente
+## 4.4. Relación entre la traza y las laderas de mayor pendiente
 
-La similitud de orientación es mayor en las proximidades de la falla. Dentro del primer kilómetro, el 46.1 % de las laderas analizadas presenta una orientación similar a la Zona de la Falla de Camú. Esta proporción disminuye a 31.0 % entre 1 y 3 km y a 29.1 % entre 3 y 10 km.
+La correspondencia entre la orientación de las laderas de mayor pendiente y la orientación general de la traza es mayor en la franja más próxima a esta. Entre 0 y 1 km, el 45.9 % de las celdas analizadas presenta una diferencia angular de hasta ±20° respecto de la orientación general de la traza.
+
+Esta proporción disminuye a 30.6 % entre 1 y 3 km y a 28.9 % entre 3 y 10 km. Por tanto, la correspondencia de orientación es mayor cerca de la traza y disminuye en las franjas más alejadas.
 
 ```{r tabla-orientacion-relieve, include=FALSE}
 
@@ -1022,7 +1141,7 @@ ggplot2::ggplot(
 
 ```
 
-```{r fig-mapa-orientacion-laderas, echo=FALSE, fig.cap="Orientación de las laderas de mayor pendiente en relación con la Zona de la Falla de Camú.", fig.width=9, fig.height=6, out.width="100%"}
+```{r fig-mapa-orientacion-laderas, echo=FALSE, fig.cap="Laderas de mayor pendiente y correspondencia de orientación con la orientación general de la traza de la Falla de Camú. Se consideran las celdas con una diferencia angular de hasta ±20°.", fig.width=9, fig.height=6, out.width="100%"}
 
 aspecto_area <- terra::crop(
   terra::terrain(dem_terrestre, v = "aspect", unit = "degrees"),
@@ -1107,7 +1226,7 @@ hillshade <- terra::shade(
 plot(
   hillshade,
   col = gray.colors(40, start = 0.98, end = 0.65),
-  main = "Laderas de mayor pendiente y similitud de orientación con la falla",
+  main = "Laderas de mayor pendiente y correspondencia con la orientación general de la traza",
   axes = TRUE,
   legend = FALSE,
   xlab = "Este UTM (m)",
@@ -1127,7 +1246,7 @@ plot(
   legend = FALSE
 )
 
-# Solo las laderas con orientación similar
+# Solo las laderas con diferencia ≤ ±20°
 plot(
   laderas_similares_mapa,
   add = TRUE,
@@ -1147,9 +1266,9 @@ legend(
   "topright",
   inset = c(0.02, 0.16),
   legend = c(
-    "Zona de Falla de Camú",
+    "Traza de la Falla de Camú",
     "Laderas de mayor pendiente",
-    "Laderas con orientación similar"
+    "Diferencia angular ≤ 20°"
   ),
   col = c(
     "red",
@@ -1165,69 +1284,134 @@ legend(
 
 ## 4.5. Comparación con la cartografía geológica
 
-La comparación con la cartografía geológica muestra que la Zona de la Falla de Camú y los principales cauces atraviesan diferentes unidades geológicas dentro del área de estudio. También se observan sectores donde los ríos Bajabonico y Camú presentan trayectorias aproximadamente paralelas a la falla y otros donde cambian de dirección o se alejan de ella.
+La comparación con la cartografía geológica muestra que la traza de la Falla de Camú y los ríos Camú y Bajabonico atraviesan diferentes unidades geológicas dentro del ámbito de estudio.
 
-```{r fig-geologia-camu, echo=FALSE, fig.cap="Contexto geológico e hidrográfico de la Zona de la Falla de Camú. Se muestran la traza de la falla, los ríos Bajabonico y Camú, la red hidrográfica y las principales relaciones espaciales identificadas durante el análisis.", out.width="100%"}
+En algunos sectores se observan tramos de los cauces con una dirección semejante a la orientación general de la traza, mientras que en otros los ríos cambian de dirección o se alejan de ella. Estos patrones se distribuyen sobre diferentes unidades geológicas.
+
+La comparación se realizó de manera cualitativa a partir de la cartografía disponible. No se realizaron cálculos estadísticos ni análisis cuantitativos por unidad litológica.
+
+El contexto geológico e hidrográfico del ámbito de estudio se presenta en la Figura \@ref(fig:fig-geologia-camu).
+
+```{r fig-geologia-camu, echo=FALSE, fig.cap="Contexto geológico e hidrográfico de la zona de la Falla de Camú. Se muestran la traza de la Falla de Camú, los ríos Camú y Bajabonico, la red hidrográfica y las unidades geológicas representadas en la cartografía utilizada.", out.width="100%"}
 knitr::include_graphics("figures/figura_interpretativa_camu.png")
 ```
-Figura elaborada en QGIS a partir de cartografía geológica del SGN, la capa Fallas 2021 y la red hidrográfica utilizada en el estudio.
-
-La figura permite reconocer que la relación espacial entre la falla y los cauces no es uniforme a lo largo del área de estudio. Algunos tramos mantienen una orientación similar a la estructura, mientras que en otros sectores los cauces modifican su trayectoria.
-
-La comparación geológica se realizó de forma cualitativa a partir de la cartografía disponible. No se realizaron intersecciones vectoriales ni cálculos cuantitativos por unidad litológica.
 
 # 5. Discusión
 
 ## 5.1. Respuesta a las preguntas de investigación
 
-Los resultados muestran una asociación entre la Zona de la Falla de Camú, la orientación de determinados tramos de los ríos y la orientación de las laderas de mayor pendiente. Esta asociación no es uniforme en toda el área de estudio. En el río Camú y en las laderas de mayor pendiente, la similitud de orientación es mayor en las proximidades de la falla y disminuye al aumentar la distancia. El río Bajabonico presenta un comportamiento diferente, ya que la similitud direccional se mantiene relativamente constante entre las distintas franjas analizadas.
+Los resultados permiten responder a la pregunta principal señalando que el relieve y el drenaje del ámbito estudiado presentan patrones compatibles con un posible control estructural asociado a la Falla de Camú, aunque esta relación no se manifiesta de manera uniforme.
 
-En conjunto, los resultados son compatibles con un control estructural sobre algunos componentes del relieve y del drenaje, pero no permiten atribuir toda la configuración observada exclusivamente a la Zona de la Falla de Camú.
+Respecto al relieve, las laderas de mayor pendiente muestran una relación direccional con la orientación general de la traza que es más evidente en los sectores próximos a esta. Esto responde a la primera pregunta específica y muestra que la relación entre relieve y estructura varía espacialmente.
+
+En cuanto al drenaje, los ríos Camú y Bajabonico presentan comportamientos diferentes. La relación con la orientación general de la traza es más clara en el río Camú y cambia con la distancia, mientras que en el Bajabonico se mantiene relativamente estable. Esto indica que la relación entre drenaje y estructura no se manifiesta de la misma manera en ambos cauces.
 
 ## 5.2. Interpretación de la relación falla–relieve–drenaje
 
-Los resultados sugieren que la relación entre la Zona de la Falla de Camú, el relieve y el drenaje varía dentro del área de estudio. En el río Camú, la mayor similitud de orientación cerca de la falla y su disminución con la distancia indican que algunos tramos del cauce podrían estar condicionados por la disposición de la estructura. En el río Bajabonico esta relación es menos evidente, ya que la similitud de orientación se mantiene relativamente constante con la distancia.
+Las diferencias observadas entre los ríos Camú y Bajabonico sugieren que una posible influencia estructural sobre el drenaje sería de carácter sectorial y no uniforme. La coincidencia entre la dirección de algunos segmentos fluviales y la orientación general de la traza puede ser compatible con un control estructural, pero también puede estar condicionada por factores como la litología y la evolución erosiva del paisaje [@pedraza1996; @gutierrez2008].
 
-En las laderas de mayor pendiente también se observa una mayor similitud de orientación en las proximidades de la falla. Este patrón, junto con la disposición espacial observada en los mapas, es compatible con una influencia estructural sobre algunos sectores del relieve. Sin embargo, la relación no es continua ni uniforme, por lo que otros factores, como las diferencias litológicas y la dinámica propia de los cauces, también pueden intervenir en la configuración del paisaje.
+En el relieve, la relación identificada entre las laderas de mayor pendiente y la traza también puede interpretarse como una posible expresión de influencia estructural en algunos sectores. Sin embargo, esta asociación espacial y direccional no permite establecer por sí sola un origen tectónico para la orientación de las laderas, ya que la configuración del relieve responde a la interacción de distintos procesos geomorfológicos y geológicos [@anderson2010; @burbank2012].
 
-## 5.3. Comparación con la bibliografía
+## 5.3. Comparación con estudios previos
 
-La orientación dominante obtenida para la Zona de la Falla de Camú, de aproximadamente 109.9°, es coherente con la dirección general ONO–ESE descrita por Escuder Viruete et al. (2021) para el segmento occidental de esta estructura entre Imbert y La Isabela. Esta coincidencia respalda la consistencia de la geometría utilizada en el análisis.
+La orientación general obtenida para la traza de la Falla de Camú, de aproximadamente 109.9°, es coherente con la dirección general ONO–ESE descrita para el sector occidental de esta estructura entre Imbert y La Isabela [@escuder2021]. Esta coincidencia aporta un elemento de comparación entre la geometría obtenida en este estudio y la cartografía geológica regional.
 
-A escala regional, Escuder-Viruete y Pérez (2020) describen el norte de La Española como un territorio condicionado por sistemas de fallas y bloques tectónicos asociados a la convergencia oblicua entre las placas del Caribe y Norteamérica. En este contexto, la similitud de orientación identificada entre algunos tramos de los ríos, las laderas de mayor pendiente y la Zona de la Falla de Camú puede interpretarse como parte de una organización estructural más amplia del relieve.
+A una escala más amplia, los estudios sobre la neotectónica del norte de La Española sitúan esta región dentro de un contexto de convergencia oblicua entre las placas del Caribe y Norteamérica [@escuderPerez2020]. Este marco regional ayuda a interpretar las relaciones observadas entre la traza, el drenaje y el relieve sin atribuir necesariamente todos los patrones identificados a una sola estructura.
 
-Prentice et al. (2003), aunque estudiaron la cercana Zona de la Falla Septentrional y no la Falla de Camú, documentaron expresiones geomorfológicas asociadas al fallamiento, como escarpes y terrazas fluviales desplazadas. Este antecedente muestra que las fallas activas del norte dominicano pueden dejar señales reconocibles en el relieve y el drenaje. Sin embargo, los resultados del presente estudio no permiten demostrar actividad tectónica reciente ni atribuir exclusivamente a la falla las formas observadas.
+Otros estudios realizados en el norte de la República Dominicana han analizado la relación entre fallamiento y paisaje en la Zona de Falla Septentrional [@prentice2003]. Aunque se trata de una estructura diferente de la Falla de Camú, constituye un antecedente regional útil para comparar estudios geomorfológicos asociados con sistemas de fallas.
 
-En conjunto, la bibliografía regional es compatible con la interpretación obtenida, pero también refuerza la necesidad de considerar otros controles, especialmente la litología y la dinámica fluvial.
+A partir de estos antecedentes, los resultados obtenidos pueden situarse dentro de un contexto regional. La coincidencia en la orientación general de la Falla de Camú constituye el vínculo más directo con los estudios revisados, mientras que los demás trabajos aportan un marco tectónico y geomorfológico de referencia para interpretar las relaciones observadas entre estructura, relieve y drenaje.
 
 ## 5.4. Alcance y limitaciones
 
-El análisis permite identificar asociaciones espaciales y direccionales entre la Zona de la Falla de Camú, los principales cauces y las laderas de mayor pendiente. Sin embargo, estas asociaciones no demuestran por sí mismas que la falla sea la causa directa de las formas observadas ni permiten establecer actividad tectónica reciente.
+El análisis permitió reconocer patrones generales de correspondencia entre la traza de la Falla de Camú, el drenaje y las laderas de mayor pendiente. Su alcance es principalmente exploratorio, ya que permite identificar sectores donde estas relaciones son más evidentes, pero no determinar de forma directa los procesos que originaron las formas observadas.
 
-Entre las principales limitaciones se encuentran la resolución y procedencia del modelo digital de elevación, la escala 1:250,000 de la cartografía geológica y el carácter cualitativo de la comparación litológica. Además, el corredor de 10 km utilizado corresponde a un ámbito operativo de análisis y no a un límite físico de influencia de la falla. La confirmación de un control tectónico requeriría información adicional de campo, cartografía de mayor detalle y, según el caso, datos geofísicos o cronológicos.
+La interpretación está condicionada por la resolución y escala de los datos utilizados, por el uso de una orientación general de la traza como referencia y por el carácter cualitativo de la comparación geológica. Además, el ámbito de hasta 10 km corresponde a una delimitación metodológica y no representa un límite físico de influencia de la falla.
+
+Por estas razones, los resultados permiten plantear relaciones geomorfológicas que podrían ser estudiadas con mayor detalle, pero su confirmación requeriría información adicional, especialmente observaciones de campo, cartografía de mayor resolución y evidencias directas de deformación o desplazamiento.
 
 # 6. Auditoría crítica de IA
 
-Durante el desarrollo del trabajo se identificaron algunas interpretaciones y términos propuestos inicialmente por la IA que requirieron revisión. Entre ellos se incluyeron expresiones como “morfotopográfico”, “vertientes empinadas”, “escarpes”, “morfometría fluvial” y “control litológico”, algunas de las cuales ampliaban el alcance real del análisis o sugerían procedimientos que finalmente no fueron realizados.
+Durante el desarrollo del trabajo se utilizó IA como apoyo para organizar el manuscrito, revisar el código, aclarar conceptos y proponer formas de presentar los resultados. Las respuestas fueron verificadas antes de incorporarlas, ya que en algunos casos fue necesario corregir términos, supuestos o interpretaciones. La Tabla \@ref(tab:tabla-auditoria-ia) presenta algunos ejemplos de este proceso.
 
-Por ejemplo, las denominadas inicialmente “vertientes empinadas” fueron redefinidas como laderas de mayor pendiente, ya que el análisis utilizó específicamente el 10 % de las pendientes más altas del área de estudio. Asimismo, se eliminó la referencia a escarpes porque estos no fueron identificados ni medidos de manera independiente, y “control litológico” fue sustituido por comparación con la cartografía geológica, debido a que esta parte del análisis fue cualitativa.
+```{r tabla-auditoria-ia, echo=FALSE}
 
-También se revisó el uso de las tolerancias de ±10°, ±15° y ±20°. Estos valores fueron utilizados como rangos exploratorios de comparación y no como umbrales establecidos por la bibliografía. Por esta razón, se evitó presentarlos como un criterio geomorfológico estándar.
+auditoria_ia <- data.frame(
+  Prueba = c(
+    "1",
+    "2",
+    "3",
+    "4"
+  ),
+  
+  `Prompt o consulta` = c(
+    "Consulta sobre la procedencia de los datos utilizados para generar el relieve y el drenaje.",
+    "Consulta sobre cómo describir las formas del relieve relacionadas con la falla.",
+    "Revisión del uso de los términos zona de falla y traza de falla en los análisis.",
+    "Revisión de los porcentajes de correspondencia de las laderas según la distancia."
+  ),
+  
+  `Respuesta o problema identificado` = c(
+    "La IA relacionó inicialmente el DEM utilizado en R con ALOS-PALSAR, aunque correspondían a procedimientos diferentes.",
+    "La IA propuso términos como escarpes y vertientes empinadas, aunque estos elementos no fueron identificados ni medidos directamente.",
+    "Se utilizó inicialmente Zona de Falla de Camú para referirse también a la línea cartográfica empleada en los cálculos.",
+    "Una versión anterior presentó valores de 46.1 %, 31.0 % y 29.1 %, diferentes de los obtenidos al volver a ejecutar el código."
+  ),
+  
+  `Cómo se verificó` = c(
+    "Se revisó el código de R y las propiedades de dem_camufalla_raw.tif en QGIS.",
+    "Se revisó el código y se comprobó que se seleccionó el 10 % de las celdas con mayores pendientes.",
+    "Se revisaron la capa utilizada y los cálculos de orientación, distancia y buffer realizados en R.",
+    "Se volvió a ejecutar tabla_relieve en R y se comprobaron los resultados."
+  ),
+  
+  `Corrección aplicada` = c(
+    "Se diferenciaron las fuentes: ALOS-PALSAR para la red hidrográfica derivada con GRASS GIS y elevatr para el DEM utilizado en el análisis del relieve.",
+    "Se sustituyeron esos términos por laderas de mayor pendiente y se aclaró que no se identificaron escarpes.",
+    "Se reservó zona de la Falla de Camú para el contexto geográfico y traza de la Falla de Camú para los cálculos sobre la línea cartográfica.",
+    "Los valores fueron actualizados a 45.9 %, 30.6 % y 28.9 %."
+  ),
+  
+  check.names = FALSE
+)
 
-Finalmente, se corrigió una confusión sobre la procedencia de los datos: que la red hidrográfica hubiera sido derivada de ALOS-PALSAR no implicaba que el DEM utilizado posteriormente en R tuviera la misma procedencia.
+knitr::kable(
+  auditoria_ia,
+  format = "latex",
+  booktabs = TRUE,
+  caption = "Ejemplos de verificación y corrección de respuestas generadas con apoyo de IA.",
+  align = c("c", "l", "l", "l", "l")
+) |>
+  kableExtra::kable_styling(
+    latex_options = "HOLD_position",
+    position = "center",
+    font_size = 8
+  ) |>
+  kableExtra::column_spec(1, width = "1.0cm") |>
+  kableExtra::column_spec(2, width = "3.0cm") |>
+  kableExtra::column_spec(3, width = "4.0cm") |>
+  kableExtra::column_spec(4, width = "3.4cm") |>
+  kableExtra::column_spec(5, width = "4.0cm") |>
+  kableExtra::row_spec(
+    1:nrow(auditoria_ia),
+    extra_latex_after = "\\addlinespace[3pt]"
+  )
+```
+La IA resultó útil para organizar el trabajo, revisar la redacción y detectar posibles formas de analizar los datos, pero sus respuestas no se consideraron automáticamente correctas. Las principales dificultades se relacionaron con el uso de términos más amplios que los procedimientos realmente realizados, la interpretación de algunos resultados y la atribución de fuentes.
+
+Por esta razón, las propuestas generadas por IA fueron contrastadas con el código de R, las propiedades de las capas en QGIS, los resultados reproducidos y la bibliografía consultada. Este proceso permitió conservar únicamente las afirmaciones que podían justificarse con los datos y métodos utilizados.
 
 # 7. Conclusiones
 
-Los resultados muestran que la Zona de Falla de Camú presenta una relación reconocible con la configuración del relieve y del drenaje, aunque esta relación no es uniforme en toda el área de estudio. La coincidencia espacial y direccional observada entre la falla, determinados tramos de los cauces y las laderas de mayor pendiente es compatible con una influencia estructural parcial, pero no permite atribuir exclusivamente a la falla la organización del paisaje.
+El análisis muestra que el relieve y el drenaje del ámbito estudiado presentan relaciones espaciales y direccionales con la traza de la Falla de Camú que son compatibles con un posible control estructural. Sin embargo, estas relaciones no son uniformes y varían según el elemento analizado.
 
-Las laderas de mayor pendiente muestran una mayor similitud de orientación con la Zona de Falla de Camú en sus proximidades, y esta relación disminuye al aumentar la distancia. Este patrón evidencia una asociación direccional entre parte del relieve y la estructura, aunque no se presenta de manera continua y debe considerarse junto con otros factores, como las diferencias litológicas presentes en el área.
+En las laderas de mayor pendiente, la correspondencia con la orientación general de la traza es mayor en los sectores más próximos y disminuye con la distancia. En el drenaje, el río Camú presenta un patrón similar, mientras que en el río Bajabonico la correspondencia se mantiene relativamente estable entre las franjas analizadas. Esto indica que la relación entre la estructura, el relieve y los cauces cambia según el sector.
 
-En el drenaje, los ríos Camú y Bajabonico presentan comportamientos distintos. El río Camú muestra una mayor similitud de orientación con la falla en los sectores más próximos y una disminución progresiva al alejarse, mientras que en el río Bajabonico la similitud direccional se mantiene relativamente constante entre las franjas analizadas. Esto indica que la relación entre drenaje y estructura es más evidente en determinados tramos y no constituye un patrón uniforme para ambos cauces.
+Los resultados permiten reconocer una asociación entre la traza de la Falla de Camú, algunas laderas de mayor pendiente y determinados tramos de los ríos analizados, pero no permiten establecer que la falla sea la causa directa de todas las formas observadas. La litología y los procesos erosivos también deben considerarse en la interpretación del paisaje.
 
-En conjunto, el estudio identifica asociaciones espaciales y direccionales compatibles con un posible control estructural de la Zona de Falla de Camú sobre sectores del relieve y del drenaje. Sin embargo, estas asociaciones no constituyen una demostración de actividad tectónica reciente ni de un control tectónico exclusivo sobre las formas observadas.
+Finalmente, las evidencias obtenidas corresponden a relaciones geomorfológicas y direccionales. Por sí solas no permiten determinar actividad tectónica reciente. Una evaluación de ese tipo requeriría información adicional, especialmente observaciones de campo, cartografía de mayor detalle y evidencias directas de deformación o desplazamiento.
 
-# Referencias
-
+# Referencias {-}
 
 
 ```{r session-info, include=FALSE}
